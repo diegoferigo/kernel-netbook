@@ -18,7 +18,7 @@ url=('http://code.google.com/p/kernel-netbook')
 
 ####################################
 md5sums=('398e95866794def22b12dfbc15ce89c0'
-         'f5743283e6075282cebfbde62e65240b'
+         '1757786b9a9ffbd48ad9642199ff5bd7'
          'c0074a1622c75916442e26763ddf47d0'
          'bca399a46c7d83affdace85b9c633e36'
          'afbd01926c57fc5b82ee6034dc9311e5'
