@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Linux/i386 3.0.1 Kernel Configuration
+# Linux/i386 3.0.4 Kernel Configuration
 #
 # CONFIG_64BIT is not set
 CONFIG_X86_32=y
@@ -588,7 +588,7 @@ CONFIG_BINFMT_ELF=y
 # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
 CONFIG_HAVE_AOUT=y
 # CONFIG_BINFMT_AOUT is not set
-# CONFIG_BINFMT_MISC is not set
+CONFIG_BINFMT_MISC=y
 CONFIG_HAVE_ATOMIC_IOMAP=y
 CONFIG_HAVE_TEXT_POKE_SMP=y
 CONFIG_NET=y
