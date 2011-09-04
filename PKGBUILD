@@ -31,7 +31,7 @@ md5sums=('398e95866794def22b12dfbc15ce89c0'
          '263725f20c0b9eb9c353040792d644e5'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '9cd62013cee44d529de140821dd75654'
-         '2935aedcfd5913213cbe08e47c90925e')
+         '5610d57e58aebfef967a2bd9696a85de')
 ###################################
 #  external drivers  and firmware #
 ###################################
@@ -169,8 +169,8 @@ package_kernel-netbook() {
   install -D -m644 ${srcdir}/linux-$_basekernel/.config $pkgdir/boot/kconfig-netbook
 
   # install preset file for mkinitcpio
-  sed -i -e "s/ALL_kver=.*/ALL_kver=\'${_kernver}\'/g" $startdir/$pkgname.preset
-  install -m644 -D ${srcdir}/kernel-netbook.preset ${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset
+  sed -i -e "s/ALL_kver=.*/ALL_kver=\'${_kernver}\'/g" ${srcdir}/${pkgname}.preset
+  install -m644 -D ${srcdir}/${pkgname}.preset ${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset
 
   # set correct depmod command for install
   sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" $startdir/$pkgname.install
