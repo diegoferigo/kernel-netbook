@@ -1,6 +1,6 @@
 # Maintainer: Dieghen89 <dieghen89@gmail.com>
 
-BFQ_IO_SCHEDULER="n"
+BFQ_IO_SCHEDULER="y"
 TUX_ON_ICE="y"
 
 pkgname=kernel-netbook
@@ -9,7 +9,7 @@ makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.0
 pkgver=${_basekernel}.4
-pkgrel=1
+pkgrel=2
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686')
@@ -21,6 +21,9 @@ md5sums=('398e95866794def22b12dfbc15ce89c0'
          '62ca5f3caed233617127b2b3b7a87d15'
          'c0074a1622c75916442e26763ddf47d0'
          'bca399a46c7d83affdace85b9c633e36'
+         'a325f43707984c93672d8f4aaf76fc2b'
+         'e1064f82d5faab2119af5f6dbeae2cb1'
+         '5d7307a9b6bf0271ee55cae6c6fe2610'
          'afbd01926c57fc5b82ee6034dc9311e5'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
@@ -31,7 +34,7 @@ md5sums=('398e95866794def22b12dfbc15ce89c0'
          '263725f20c0b9eb9c353040792d644e5'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '9cd62013cee44d529de140821dd75654'
-         '5610d57e58aebfef967a2bd9696a85de')
+         '4866247428caaa5fafaa15af9e670496')
 ###################################
 #  external drivers  and firmware #
 ###################################
@@ -44,7 +47,7 @@ _ckpatchversion=1
 _ckpatchname="patch-${_basekernel}.0-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
 _bfqpatchversion="1"
-_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.0"
+_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.0.0"
 #TuxOnIce:
 _toipatch="current-tuxonice-for-3.0.patch.bz2"
 
@@ -58,9 +61,9 @@ source=( #kernel sources and arch patchset
 	#BFS patch:
 	"http://www.kernel.org/pub/linux/kernel/people/ck/patches/3.0/${_basekernel}.0-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
-	##"${_bfqpath}/0001-block-prepare-I-O-context-code-for-BFQ-v2-for-2.6.39.patch"
-	##"${_bfqpath}/0002-block-cgroups-kconfig-build-bits-for-BFQ-v2-2.6.39.patch"
-	##"${_bfqpath}/0003-block-introduce-the-BFQ-v2-I-O-sched-for-2.6.39.patch"
+	"${_bfqpath}/0001-block-prepare-I-O-context-code-for-BFQ-v3-for-3.0.patch"
+	"${_bfqpath}/0002-block-cgroups-kconfig-build-bits-for-BFQ-v3-3.0.patch"
+	"${_bfqpath}/0003-block-introduce-the-BFQ-v3-I-O-sched-for-3.0.patch"
 	#TuxOnIce:
 	"http://tuxonice.net/files/${_toipatch}"
 	#Arch Logo
@@ -118,9 +121,6 @@ build() {
     for i in $(ls ${srcdir}/000*.patch); do
       patch -Np1 -i $i
     done
-    #sed -i s'/CONFIG_DEFAULT_CFQ=y/# CONFIG_DEFAULT_CFQ is not set/g' ${srcdir}/linux-$_basekernel/.config
-    #sed -i s'/\# CONFIG_DEFAULT_BFQ is not set/CONFIG_DEFAULT_BFQ=y/g' ${srcdir}/linux-$_basekernel/.config
-    #sed -i s'/CONFIG_DEFAULT_IOSCHED=*/CONFIG_DEFAULT_IOSCHED="bfq"/g' ${srcdir}/linux-$_basekernel/.config
   fi
 
   # copy config
