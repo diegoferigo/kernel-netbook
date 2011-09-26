@@ -123,6 +123,11 @@ build() {
     done
   fi
 
+
+  ### Clean tree and copy ARCH config over
+  msg "Running make mrproper to clean source tree"
+  make mrproper
+
   # copy config
   cp ../config ./.config
 
