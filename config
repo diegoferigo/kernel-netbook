@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Linux/i386 3.0.4 Kernel Configuration
+# Linux/i386 3.0.6 Kernel Configuration
 #
 # CONFIG_64BIT is not set
 CONFIG_X86_32=y
@@ -2644,7 +2644,7 @@ CONFIG_EXT3_FS_XATTR=y
 CONFIG_EXT4_FS=y
 CONFIG_EXT4_FS_XATTR=y
 CONFIG_EXT4_FS_POSIX_ACL=y
-# CONFIG_EXT4_FS_SECURITY is not set
+CONFIG_EXT4_FS_SECURITY=y
 # CONFIG_EXT4_DEBUG is not set
 CONFIG_JBD=y
 # CONFIG_JBD_DEBUG is not set
