@@ -8,8 +8,8 @@ true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.0
-pkgver=${_basekernel}.4
-pkgrel=2
+pkgver=${_basekernel}.6
+pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686')
@@ -18,7 +18,7 @@ url=('http://code.google.com/p/kernel-netbook')
 
 ####################################
 md5sums=('398e95866794def22b12dfbc15ce89c0'
-         '62ca5f3caed233617127b2b3b7a87d15'
+         '792f01cc8874d03a84e47fd0e7065df8'
          'c0074a1622c75916442e26763ddf47d0'
          'bca399a46c7d83affdace85b9c633e36'
          'a325f43707984c93672d8f4aaf76fc2b'
@@ -54,7 +54,8 @@ _toipatch="current-tuxonice-for-3.0.patch.bz2"
 ##### Sources #####
 source=( #kernel sources and arch patchset
 	"ftp://ftp.kernel.org/pub/linux/kernel/v3.0/linux-${_basekernel}.tar.bz2"
-	"ftp://ftp.kernel.org/pub/linux/kernel/v3.0/patch-${pkgver}.bz2"
+	#"ftp://ftp.kernel.org/pub/linux/kernel/v3.0/patch-${pkgver}.bz2"
+	"ftp://ftp.archlinux.org/other/linux/patch-${pkgver}.gz"
 	#external drivers:
 	"http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz"
 	#"http://switch.dl.sourceforge.net/sourceforge/syntekdriver/stk11xx-$stk11xx_ver.tar.gz"
