@@ -34,7 +34,7 @@ md5sums=('398e95866794def22b12dfbc15ce89c0'
          '263725f20c0b9eb9c353040792d644e5'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '9cd62013cee44d529de140821dd75654'
-         'ba854d03778fde090992f4d5eb64c03b')
+         '5b4d6028d85320dc6bc4034991dfab9d')
 ###################################
 #  external drivers  and firmware #
 ###################################
@@ -182,14 +182,14 @@ package_kernel-netbook() {
   sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" $startdir/$pkgname.install
 
 ##Section: Broadcom-wl
-  msg "Compiling broadcom-wl module:"
-  cd ${srcdir}/
-  #patching broadcom as broadcom-wl package on AUR
-  patch -p1 < license.patch
-  patch -p1 < semaphore.patch
-  patch -p1 < mutex-sema.patch
-  make -C ${srcdir}/linux-$_basekernel M=`pwd`
-  install -D -m 755 wl.ko ${pkgdir}/lib/modules/$_kernver/kernel/drivers/net/wireless/wl.ko
+  #msg "Compiling broadcom-wl module:"
+  #cd ${srcdir}/
+  ##patching broadcom as broadcom-wl package on AUR
+  #patch -p1 < license.patch
+  #patch -p1 < semaphore.patch
+  #patch -p1 < mutex-sema.patch
+  #make -C ${srcdir}/linux-$_basekernel M=`pwd`
+  #install -D -m 755 wl.ko ${pkgdir}/lib/modules/$_kernver/kernel/drivers/net/wireless/wl.ko
   
   # gzip -9 all modules to safe a lot of MB of space
   find "$pkgdir" -name '*.ko' -exec gzip -9 {} \;
