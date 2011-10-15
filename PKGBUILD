@@ -9,7 +9,7 @@ makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.0
 pkgver=${_basekernel}.6
-pkgrel=2
+pkgrel=3
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686')
@@ -34,7 +34,7 @@ md5sums=('398e95866794def22b12dfbc15ce89c0'
          '263725f20c0b9eb9c353040792d644e5'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '9cd62013cee44d529de140821dd75654'
-         '5b4d6028d85320dc6bc4034991dfab9d')
+         'eb2e827c2f4925619a1401bd2187ff00')
 ###################################
 #  external drivers  and firmware #
 ###################################
@@ -179,7 +179,7 @@ package_kernel-netbook() {
   install -D -m644 ${srcdir}/linux-$_basekernel/.config $pkgdir/boot/kconfig-netbook
 
   # install preset file for mkinitcpio
-  sed -i -e "s/ALL_kver=.*/ALL_kver=\'${_kernver}\'/g" ${srcdir}/${pkgname}.preset
+  #sed -i -e "s/ALL_kver=.*/ALL_kver=\'${_kernver}\'/g" ${srcdir}/${pkgname}.preset
   install -m644 -D ${srcdir}/${pkgname}.preset ${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset
 
   # set correct depmod command for install
