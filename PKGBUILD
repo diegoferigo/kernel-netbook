@@ -19,7 +19,7 @@ url=('http://code.google.com/p/kernel-netbook')
 ####################################
 md5sums=('398e95866794def22b12dfbc15ce89c0'
          '9d003f28c02ed5625693693cd9f6004b'
-         'c0074a1622c75916442e26763ddf47d0'
+         '9d6aab618fbf5dece2832112d2160f9a'
          'bca399a46c7d83affdace85b9c633e36'
          'a325f43707984c93672d8f4aaf76fc2b'
          'e1064f82d5faab2119af5f6dbeae2cb1'
@@ -33,16 +33,16 @@ md5sums=('398e95866794def22b12dfbc15ce89c0'
          '21ce3f7967d7305064bf7eb60030ffea'
          '263725f20c0b9eb9c353040792d644e5'
          '9d3c56a4b999c8bfbd4018089a62f662'
-         '3b97f7064cd02188a6f21802a19c4ab8'
+         'a9c018cb0b9caa90f03ee90b71a2c457'
 	 'b5d7e11b3623f53a1fa8fbed493ba308'
 	 '88a0aebd33974334080e322a6f34533e'
-         '1240ac014c84f6cbc6d7f49121c3e7b5')
+         '27ba35fe649ddd25b75295d5192b92fc')
 ###################################
 #  external drivers  and firmware #
 ###################################
 
 #Broadcom-wl:
-broadcom_ver=5.100.82.38
+broadcom_ver=5.100.82.111
 broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
 #BFS: - http://users.on.net/~ckolivas/kernel/ -
 _ckpatchversion=1
