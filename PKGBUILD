@@ -57,11 +57,10 @@ newserver="http://kernelorg.mirrors.tds.net/pub/linux/kernel"
 
 ##### Sources #####
 source=( #kernel sources and arch patchset
-	#"ftp://ftp.kernel.org/pub/linux/kernel/v3.0/linux-${_basekernel}.tar.bz2"
-	"${newserver}/v3.0/linux-${_basekernel}.tar.bz2"
+	"http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
 	#"ftp://ftp.kernel.org/pub/linux/kernel/v3.0/patch-${pkgver}.bz2"
-	"ftp://ftp.archlinux.org/other/linux/patch-${pkgver}.gz"
-	#external drivers:
+	#"ftp://ftp.archlinux.org/other/linux/patch-${pkgver}.gz"
+	##external drivers:
 	"http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz"
 	#"http://switch.dl.sourceforge.net/sourceforge/syntekdriver/stk11xx-$stk11xx_ver.tar.gz"
 	#BFS patch:
@@ -96,10 +95,7 @@ build() {
   # Patching Time:
 
   # minorversion patch:
-  patch -p1 -i "${srcdir}/patch-${pkgver}"
-
-  # fix #19234 i1915 display size
-  patch -Np1 -i "${srcdir}/fix-i915.patch"
+  #patch -p1 -i "${srcdir}/patch-${pkgver}"
 
   # set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
   # remove this when a Kconfig knob is made available by upstream
