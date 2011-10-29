@@ -7,8 +7,8 @@ pkgname=kernel-netbook
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
-_basekernel=3.0
-pkgver=${_basekernel}.7
+_basekernel=3.1
+pkgver=${_basekernel}
 pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
@@ -42,7 +42,7 @@ md5sums=('398e95866794def22b12dfbc15ce89c0'
 ###################################
 
 #Broadcom-wl:
-broadcom_ver=5.100.82.111
+broadcom_ver=5.100.82.112
 broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
 #BFS: - http://users.on.net/~ckolivas/kernel/ -
 _ckpatchversion=1
@@ -80,8 +80,6 @@ source=( #kernel sources and arch patchset
 	#Others:
 	"license.patch"
 	"semaphore.patch"
-	"mutex-sema.patch"
-	"fix-i915.patch"
         "change-default-console-loglevel.patch"
 	"kernel-netbook.preset"
 	"http://ck.kolivas.org/patches/bfs/3.0.0/3.0-ck1-bfs-406-413.patch"
@@ -199,10 +197,10 @@ package_kernel-netbook() {
   #msg "Compiling broadcom-wl module:"
   #cd ${srcdir}/
   ##patching broadcom as broadcom-wl package on AUR
-  #patch -p1 < license.patch
-  #patch -p1 < semaphore.patch
-  #patch -p1 < mutex-sema.patch
-  #make -C ${srcdir}/linux-$_basekernel M=`pwd`
+  #patch -p1 -i linux3.patch
+  #patch -p1 -i license.patch
+  #patch -p1 -i semaphore.patch
+  #make API=WEXT -C ${srcdir}/linux-$_basekernel M=`pwd`
   #install -D -m 755 wl.ko ${pkgdir}/lib/modules/$_kernver/kernel/drivers/net/wireless/wl.ko
   
   # gzip -9 all modules to safe a lot of MB of space
