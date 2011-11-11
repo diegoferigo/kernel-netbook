@@ -1,7 +1,7 @@
 # Maintainer: Dieghen89 <dieghen89@gmail.com>
 
 BFQ_IO_SCHEDULER="y"
-TUX_ON_ICE="y"
+TUX_ON_ICE="n"
 
 pkgname=kernel-netbook
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
@@ -39,7 +39,7 @@ md5sums=('8d43453f8159b2332ad410b19d86a931'
          'a9c018cb0b9caa90f03ee90b71a2c457'
          'b5d7e11b3623f53a1fa8fbed493ba308'
          '88a0aebd33974334080e322a6f34533e'
-         '24cdc6eb512b25ca4c67e2f1427879e1')
+         '9f9a1ba7ddb030d78aa1606229b18532')
 ###################################
 #  external drivers  and firmware #
 ###################################
@@ -240,7 +240,7 @@ package_kernel-netbook() {
   ln -s "../extramodules-${_basekernel}${_kernelname:--netbook}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
   # add real version for building modules and running depmod from post_install/upgrade
   mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--netbook}"
-  echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:-netbook}/version"
+  echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--netbook}/version"
 }
 
 package_kernel-netbook-headers() {
