@@ -178,6 +178,7 @@ build() {
   # use menuconfig, if you want to change the configuration
   make menuconfig
   # make gconfig
+  # make nconfig
   yes "" | make config
   # build kernel
   msg "Now starts something magic:"
