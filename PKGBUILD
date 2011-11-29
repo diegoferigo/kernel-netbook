@@ -2,6 +2,7 @@
 
 BFQ_IO_SCHEDULER="y"
 TUX_ON_ICE="n"
+BROADCOM_WL="n"
 
 pkgname=kernel-netbook
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
@@ -28,6 +29,7 @@ md5sums=('8d43453f8159b2332ad410b19d86a931'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
          'a6f0377c814da594cffcacbc0785ec1a'
+	 '3f79843b6b1a3f7e8041eb8ed86e4ff5'
          '2bb172117ede96c14289f9f9bc34f58f'
          'aee89fe7f034aea2f2ca95322774c1b5'
          '9d3c56a4b999c8bfbd4018089a62f662'
@@ -76,6 +78,7 @@ source=( #kernel sources and arch patchset
         "logo_linux_clut224.ppm"
 	"logo_linux_vga16.ppm"
 	#Others:
+	"linux3.patch"
 	"license.patch"
 	"semaphore.patch"
         "change-default-console-loglevel.patch"
@@ -221,24 +224,29 @@ package_kernel-netbook() {
   # set correct depmod command for install
   sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" $startdir/$pkgname.install
 
+##Extramodules dir support
+  _extramodules="extramodules-${_basekernel}${_kernelname:--netbook}"  
+
 ##Section: Broadcom-wl
-  #msg "Compiling broadcom-wl module:"
-  #cd ${srcdir}/
-  ##patching broadcom as broadcom-wl package on AUR
-  #patch -p1 -i linux3.patch
-  #patch -p1 -i license.patch
-  #patch -p1 -i semaphore.patch
-  #make -C ${srcdir}/linux-$_basekernel M=`pwd`
-  #install -D -m 755 wl.ko ${pkgdir}/lib/modules/$_kernver/kernel/drivers/net/wireless/wl.ko
-  
+  if [ "${BROADCOM_WL}" == "y" ] ; then
+    msg "Compiling broadcom-wl module:"
+    cd ${srcdir}/
+    #patching broadcom as broadcom-wl package on AUR
+    patch -p1 -i linux3.patch
+    patch -p1 -i license.patch
+    patch -p1 -i semaphore.patch
+    make -C ${srcdir}/linux-$_basekernel M=`pwd`
+    install -D -m 755 wl.ko ${pkgdir}/lib/modules/${_extramodules}/wl.ko
+  fi
+
   # gzip -9 all modules to safe a lot of MB of space
   find "$pkgdir" -name '*.ko' -exec gzip -9 {} \;
 
   # make room for external modules
-  ln -s "../extramodules-${_basekernel}${_kernelname:--netbook}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
+  ln -s "../${_extramodules}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
   # add real version for building modules and running depmod from post_install/upgrade
-  mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--netbook}"
-  echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--netbook}/version"
+  mkdir -p "${pkgdir}/lib/modules/${_extramodules}"
+  echo "${_kernver}" > "${pkgdir}/lib/modules/${_extramodules}/version"
 }
 
 package_kernel-netbook-headers() {
