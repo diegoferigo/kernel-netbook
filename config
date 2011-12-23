@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/i386 3.1.4 Kernel Configuration
+# Linux/i386 3.1.6 Kernel Configuration
 #
 # CONFIG_64BIT is not set
 CONFIG_X86_32=y
@@ -2709,7 +2709,7 @@ CONFIG_XFS_RT=y
 # CONFIG_GFS2_FS is not set
 CONFIG_BTRFS_FS=m
 # CONFIG_BTRFS_FS_POSIX_ACL is not set
-# CONFIG_NILFS2_FS is not set
+CONFIG_NILFS2_FS=m
 CONFIG_FS_POSIX_ACL=y
 CONFIG_EXPORTFS=y
 CONFIG_FILE_LOCKING=y
