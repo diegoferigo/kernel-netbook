@@ -1,8 +1,8 @@
 
 # Maintainer: Dieghen89 <dieghen89@gmail.com>
 
-BFQ_IO_SCHEDULER="not_available"
-TUX_ON_ICE="n"
+BFQ_IO_SCHEDULER="y"
+TUX_ON_ICE="n" #There is an unofficial patch but it doesn't work
 BROADCOM_WL="n"
 
 pkgname=kernel-netbook
@@ -11,7 +11,7 @@ makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.2
 pkgver=${_basekernel}.1
-pkgrel=1
+pkgrel=3
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686')
@@ -22,11 +22,11 @@ url=('http://code.google.com/p/kernel-netbook')
 md5sums=('7ceb61f87c097fc17509844b71268935'
          '31fc34340f11118873463a1d59d47b7f'
          '62d04d148b99f993ef575a71332593a9'
-         '18d5f982d4d21446a32843f9eb766ff0'
-         'e470805b4ef9d469a85b6e2f811ac337'
-         '61ca56c06bf197c0548ecd9fe01b2515'
-         '93e1b461374ae8b5147bba9887964cbe'
-         'afbd01926c57fc5b82ee6034dc9311e5'
+         'ca14fff2785d37e55eeb80c4e646c28f'
+         '8e8a772ad7f16ea9cd8d42c5cc8dbcf3'
+         '04004473d27209cc0112073a32cd318b'
+         '80c79fe5b699415ca9aee5f5a1d07b7f'
+         '2419d8f7711d644900b87d4a6c13bc8f'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
          'a6f0377c814da594cffcacbc0785ec1a'
@@ -37,7 +37,7 @@ md5sums=('7ceb61f87c097fc17509844b71268935'
          '263725f20c0b9eb9c353040792d644e5'
          'e787ef4bc66e2d9a7883eaece7a915b9'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         '9c68d69c85645b053edca2ae47bd0aeb')
+         'd784892fafeae35211e190f6a0d79311')
 ###################################
 #  external drivers  and firmware #
 ###################################
@@ -46,14 +46,13 @@ md5sums=('7ceb61f87c097fc17509844b71268935'
 broadcom_ver=5.100.82.112
 broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
 #BFS: - http://users.on.net/~ckolivas/kernel/ -
-#_ckpatchversion=2
-#_ckpatchname="patch-${_basekernel}.0-ck${_ckpatchversion}"
-_ckpatchname="3.2-sched-bfs-416.patch"
+_ckpatchversion=1
+_ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
-_bfqpatchversion="1"
-_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.1.0-v3r1"
+_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.2.0-v3r2"
 #TuxOnIce:
-_toipatch="current-tuxonice-for-3.0.patch.bz2"
+#_toipatch="current-tuxonice-for-3.0.patch.bz2"
+_toipatch="tuxonice-3.2-for-3.2-rc5.patch.bz2"
 
 ##### Sources #####
 source=( #kernel sources and arch patchset
@@ -64,14 +63,14 @@ source=( #kernel sources and arch patchset
 	"http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz"
 	#"http://switch.dl.sourceforge.net/sourceforge/syntekdriver/stk11xx-$stk11xx_ver.tar.gz"
 	#BFS patch:
-	#"http://ck.kolivas.org/patches/3.0/3.1/${_basekernel}.0-ck${_ckpatchversion}/${_ckpatchname}.bz2"
-	"http://ck.kolivas.org/patches/bfs/3.2.0/${_ckpatchname}"
+	"http://ck.kolivas.org/patches/3.0/3.2/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
-	"${_bfqpath}/0001-block-prepare-I-O-context-code-for-BFQ-v3r1-for-3.1.patch"
-	"${_bfqpath}/0002-block-cgroups-kconfig-build-bits-for-BFQ-v3r1-3.1.patch"
-	"${_bfqpath}/0003-block-introduce-the-BFQ-v3r1-I-O-sched-for-3.1.patch"
+	"${_bfqpath}/0001-block-prepare-I-O-context-code-for-BFQ-v3r2-for-3.2.patch"
+	"${_bfqpath}/0002-block-cgroups-kconfig-build-bits-for-BFQ-v3r2-3.2.patch"
+	"${_bfqpath}/0003-block-introduce-the-BFQ-v3r2-I-O-sched-for-3.2.patch"
 	#TuxOnIce:
-	"http://tuxonice.net/files/${_toipatch}"
+	#"http://tuxonice.net/files/${_toipatch}"
+	"http://user.it.uu.se/~mikpe/linux/patches/tuxonice/${_toipatch}"
 	#Arch Logo
 	"logo_linux_mono.pbm"
         "logo_linux_clut224.ppm"
