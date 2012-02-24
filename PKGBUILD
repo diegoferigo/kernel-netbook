@@ -1,9 +1,35 @@
 
 # Maintainer: Dieghen89 <dieghen89@gmail.com>
+# Thanks to graysky for a lot of features in this PKGBUILD
+
 
 BFQ_IO_SCHEDULER="y"
 TUX_ON_ICE="y" #Use the HEAD patch by git tree
 BROADCOM_WL="n"
+LOCALMODCONFIG="n"
+USE_CURRENT="n"
+
+### HOW-TO:
+#
+## >> Details for: BFQ_IO_SCHEDULER
+#		Set it to "n" if you don't want the module compiled.
+#		In any case, it isn't the default io-scheduler
+#
+## >> Details for: TUX_ON_ICE
+#		Set it to "n" you you don't want the Tux On Ice support
+#
+## >> Details for: BROADCOM_WL
+#		Set is to "y" if you need the iw module for your wireless card
+#
+## >> Details for: LOCALMODCONFIG
+#		Set it to "y" if you want to modify my config file and include only
+#		the modules that you are using in this moment.
+#		Be sure that are all probed!
+#
+#		P.S. this pkgbuild supports the graysky's modprobe_db package
+#
+## >> Details for: USE_CURRENT
+#		Use your current config file istead the one shipped by kernel-netbook
 
 pkgname=kernel-netbook
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
@@ -19,13 +45,13 @@ license=('GPL2')
 url=('http://code.google.com/p/kernel-netbook')
 
 ####################################
-md5sums=('7ceb61f87c097fc17509844b71268935'
-         '899624bffed6a19578613b672cc9483f'
-         '62d04d148b99f993ef575a71332593a9'
-         'ca14fff2785d37e55eeb80c4e646c28f'
-         '8e8a772ad7f16ea9cd8d42c5cc8dbcf3'
-         '04004473d27209cc0112073a32cd318b'
-         '80c79fe5b699415ca9aee5f5a1d07b7f'
+md5sums=('7ceb61f87c097fc17509844b71268935'                                                                              
+         '899624bffed6a19578613b672cc9483f'                                                                              
+         '62d04d148b99f993ef575a71332593a9'                                                                              
+         'ca14fff2785d37e55eeb80c4e646c28f'                                                                              
+         '8e8a772ad7f16ea9cd8d42c5cc8dbcf3'                                                                              
+         '04004473d27209cc0112073a32cd318b'                                                                              
+         '80c79fe5b699415ca9aee5f5a1d07b7f'                                                                              
          '3c7bba84075454322a05f105029b10a7'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
@@ -33,6 +59,7 @@ md5sums=('7ceb61f87c097fc17509844b71268935'
          '3f79843b6b1a3f7e8041eb8ed86e4ff5'
          '2bb172117ede96c14289f9f9bc34f58f'
          'aee89fe7f034aea2f2ca95322774c1b5'
+         '1f0ab857c69754c992b0d1d871b8cc66'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '263725f20c0b9eb9c353040792d644e5'
          'e787ef4bc66e2d9a7883eaece7a915b9'
@@ -80,7 +107,8 @@ source=( #kernel sources and arch patchset
 	"linux3.patch"
 	"license.patch"
 	"semaphore.patch"
-        "change-default-console-loglevel.patch"
+	"multicast.patch"
+   "change-default-console-loglevel.patch"
 	"i915-fix-ghost-tv-output.patch"
 	"i915-gpu-finish.patch"
 	"kernel-netbook.preset"
@@ -149,8 +177,31 @@ build() {
 
   # copy config
   cp ../config ./.config
+  
+  if [ $USE_CURRENT = "y" ]; then
+		if [[ -s /proc/config.gz ]]; then
+			msg "Extracting config from /proc/config.gz..."
+			# modprobe configs
+			zcat /proc/config.gz > ./.config
+		else
+			warning "You kernel was not compiled with IKCONFIG_PROC!"
+			warning "You cannot read the current config!"
+			warning "Aborting!"
+			exit
+		fi
+	fi
 
   make prepare
+  
+  	if [ $LOCALMODCONFIG = "y" ] ; then
+		msg "If you have modprobe_db installed, running it in recall mode now"
+		if [ -e /usr/bin/modprobed_db ] ; then
+			[[ ! -x /usr/bin/sudo ]] && echo "Cannot call modprobe with sudo.  Install via pacman -S sudo and configure to work with this user." && exit 1
+			sudo /usr/bin/modprobed_db recall
+		fi
+		msg "Running Steven Rostedt's make localmodconfig now"
+		make localmodconfig
+	fi
 
   # make defconfig
   # configure kernel    
@@ -210,6 +261,7 @@ package_kernel-netbook() {
     #patching broadcom as broadcom-wl package on AUR
     patch -p1 -i linux3.patch
     patch -p1 -i license.patch
+    patch -p1 -i multicast.patch
     patch -p1 -i semaphore.patch
     make -C ${srcdir}/linux-$_basekernel M=`pwd`
     install -D -m 755 wl.ko ${pkgdir}/lib/modules/${_extramodules}/wl.ko
