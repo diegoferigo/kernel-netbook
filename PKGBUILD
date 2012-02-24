@@ -10,7 +10,7 @@ true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.2
-pkgver=${_basekernel}.5
+pkgver=${_basekernel}.7
 pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
@@ -20,13 +20,13 @@ url=('http://code.google.com/p/kernel-netbook')
 
 ####################################
 md5sums=('7ceb61f87c097fc17509844b71268935'
-         'fb4d0b76b4c9a42977d75c4b2f3948d0'
+         '899624bffed6a19578613b672cc9483f'
          '62d04d148b99f993ef575a71332593a9'
          'ca14fff2785d37e55eeb80c4e646c28f'
          '8e8a772ad7f16ea9cd8d42c5cc8dbcf3'
          '04004473d27209cc0112073a32cd318b'
          '80c79fe5b699415ca9aee5f5a1d07b7f'
-         'bdaee0ebf49240916f7aadb8087c29f7'
+         '3c7bba84075454322a05f105029b10a7'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
          'a6f0377c814da594cffcacbc0785ec1a'
@@ -37,7 +37,7 @@ md5sums=('7ceb61f87c097fc17509844b71268935'
          '263725f20c0b9eb9c353040792d644e5'
          'e787ef4bc66e2d9a7883eaece7a915b9'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         'a1d2c0dc88db8316a3946f0ede06342f')
+         '0602e8477aadc9d8ee9540a3ff97102d')
 ###################################
 #  external drivers  and firmware #
 ###################################
@@ -53,7 +53,7 @@ _bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.2.0-v3r2"
 #TuxOnIce:
 #_toipatch="current-tuxonice-for-3.0.patch.bz2"
 #_toipatch="tuxonice-3.2-for-3.2-rc5.patch.bz2"
-_toipatch="tuxonice-head-2012Jan01-for_Linux_3_2_1.patch"
+_toipatch="tuxonice-2012Feb05-for_Linux_3_2_5.patch"
 ##### Sources #####
 source=( #kernel sources and arch patchset
 	"http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
