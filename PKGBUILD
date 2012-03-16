@@ -228,6 +228,7 @@ package_kernel-netbook() {
 	      'hibernate-script: tux on ice default script'
 	      'tuxonice-userui: graphical interface for toi [AUR]')
   groups=(eee)
+  provides=('linux')
 
   cd ${srcdir}/linux-$_basekernel
   # install our modules
@@ -284,6 +285,7 @@ package_kernel-netbook() {
 package_kernel-netbook-headers() {
   KARCH=x86
   pkgdesc='Header files and scripts for building modules for kernel-netbook'
+  provides=('linux-headers')
 
   mkdir -p "${pkgdir}/lib/modules/${_kernver}"
 
