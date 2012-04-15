@@ -35,7 +35,7 @@ makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.3
 pkgver=${_basekernel}.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686')
@@ -61,7 +61,7 @@ md5sums=('98a6cdd7d082b7ea72df9c89842bac74'
          '263725f20c0b9eb9c353040792d644e5'
          'c8299cf750a84e12d60b372c8ca7e1e8'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         '797c2e8e96897be5a7da197227ce9803')
+         '11edeac83a346019b9465b4e54ab991c')
 ###################################
 #  external drivers  and firmware #
 ###################################
