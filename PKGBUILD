@@ -2,7 +2,7 @@
 # Thanks to graysky for a lot of features in this PKGBUILD
 
 BFQ_IO_SCHEDULER="y"
-TUX_ON_ICE="y" #Use the HEAD patch by git tree
+TUX_ON_ICE="n" #Use the HEAD patch by git tree
 BROADCOM_WL="n"
 LOCALMODCONFIG="n"
 USE_CURRENT="n"
@@ -39,9 +39,9 @@ pkgname=kernel-netbook
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
-_basekernel=3.3
-pkgver=${_basekernel}.4
-pkgrel=2
+_basekernel=3.4
+pkgver=${_basekernel}
+pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686')
@@ -49,14 +49,13 @@ license=('GPL2')
 url=('http://code.google.com/p/kernel-netbook')
 
 ####################################
-md5sums=('98a6cdd7d082b7ea72df9c89842bac74'
-	 '5aeb2b97a42c59c52dbe51fc18a94b25'
+md5sums=('146af0160fc7a60cf9acf44aec13482b'
          '62d04d148b99f993ef575a71332593a9'
-         '15a65cc8e4a9720a044fcdaac8bb2522'
-         '6b2425e00827d1b795001d09c8135a30'
-         '83577ddfbcd2bdc079bff04c5848b8e1'
-	 'ad6b29a8c8b092f944ec8d6ce03d87f2'
-	 'c18b08cceaaf540acbab8a4046829944'
+         '326d9b24ca483f077c792500ec2cdf55'
+         'ce3b3d2a376f81a55559406db68a3a27'
+         'a13f85b218ce6e85fdd7b6c9878c424c'
+         'dbbaae554401eb4136086bb41ab785e4'
+         '31c9613d6c29091675b1a54822e86531'
          '55f74c824ce35b5467c71c90bc8a24c7'
          '5475914ee884a87393690b17e4d66105'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
@@ -68,9 +67,8 @@ md5sums=('98a6cdd7d082b7ea72df9c89842bac74'
          '1f0ab857c69754c992b0d1d871b8cc66'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '263725f20c0b9eb9c353040792d644e5'
-         'c8299cf750a84e12d60b372c8ca7e1e8'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         '8721cb4aa7db40fea10bbad2d0a74a33')
+         'a7e7b77d04bae96a19a7c618fea4646c')
 #############################################
 #  external drivers, firmware and variables #
 #############################################
@@ -82,31 +80,30 @@ broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
 _ckpatchversion=1
 _ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
-_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.3.0-v3r3"
+_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.4.0-v3r4"
 #TuxOnIce:
-#_toipatch="current-tuxonice-for-3.0.patch.bz2"
-#_toipatch="tuxonice-3.2-for-3.2-rc5.patch.bz2"
-#_toipatch="tuxonice-2012Feb05-for_Linux_3_2_5.patch"
-_uksm="http://kerneldedup.org/download/uksm/0.1.1/patches/vanilla"
+#
+#uKSM:
+_uksm="http://kerneldedup.org/download/uksm/0.1.1.1/patches"
 ##### Sources #####
 source=( #kernel sources and arch patchset
 	"http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
-	"http://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
+	#"http://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
 	#"ftp://ftp.archlinux.org/other/linux/patch-${pkgver}.gz"
 	##external drivers:
 	"http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz"
 	#BFS patch:
-	"http://ck.kolivas.org/patches/3.0/3.3/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
+	"http://ck.kolivas.org/patches/3.0/3.4/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
-	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v3r3-3.3.patch"
-	"${_bfqpath}/0002-block-introduce-the-BFQ-v3r3-I-O-sched-for-3.3.patch"
+	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v3r4-3.4.patch"
+	"${_bfqpath}/0002-block-introduce-the-BFQ-v3r4-I-O-sched-for-3.4.patch"
 	#TuxOnIce:
 	#"http://tuxonice.net/files/${_toipatch}"
 	#"http://user.it.uu.se/~mikpe/linux/patches/tuxonice/${_toipatch}"
 	#"http://chakra-linux.org/sources/linux/patches/3.2/features/tuxonice/${_toipatch}.xz"
 	"toi-3.4.patch"
 	#uKSM
-	"${_uksm}/uksm-0.1.1-for-3.3.4.patch"
+	"${_uksm}/uksm-0.1.1.1-for-v3.4.ge.0.patch"
 	"${_uksm}/0001-UKSM-let-the-default-uksm_sleep_jiffies-10-msecs.patch"
 	"${_uksm}/0002-UKSM-Fix-a-libc-crash-introduced-by-uksm-zero-pfn.patch"
 	#Arch Logo
@@ -120,7 +117,7 @@ source=( #kernel sources and arch patchset
 	"multicast.patch"
 	"change-default-console-loglevel.patch"
 	"i915-fix-ghost-tv-output.patch"
-	"ext4-options.patch"
+	#"ext4-options.patch"
 	"kernel-netbook.preset"
 	"config")
 	
@@ -131,8 +128,8 @@ build() {
   # Patching Time:
 
   # minorversion patch:
-  msg "Minorversion patch"
-  patch -p1 -i "${srcdir}/patch-${pkgver}"
+  #msg "Minorversion patch"
+  #patch -p1 -i "${srcdir}/patch-${pkgver}"
 
   # Some chips detect a ghost TV output
   # mailing list discussion: http://lists.freedesktop.org/archives/intel-gfx/2011-April/010371.html
@@ -147,10 +144,6 @@ build() {
   # remove this when a Kconfig knob is made available by upstream
   # (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
   patch -Np1 -i "${srcdir}/change-default-console-loglevel.patch"
-  
-  # fix ext4 module to mount ext3/2 correct
-  # https://bugs.archlinux.org/task/28653
-  patch -Np1 -i "${srcdir}/ext4-options.patch"
 
   # replace tux logo with arch one
   install -m644 ${srcdir}/logo_linux_clut224.ppm drivers/video/logo/
@@ -167,28 +160,24 @@ build() {
   # --> TOI
   if [ $TUX_ON_ICE = "y" ] ; then
     msg "Patching source with TuxOnIce patch"
-    #bzip2 -d ${srcdir}/${_toipatch} \
-    #    | sed 's/printk(KERN_INFO "PM: Creating hibernation image:\\n/printk(KERN_INFO "PM: Creating hibernation image: \\n/' \
-    #    | patch -Np1 -F4 || { echo "Failed TOI"; return 1 ; }
-    ##patch -Np1 -F4 -i ${srcdir}/${_toipatch}
     patch -Np1 -F4 -i ${srcdir}/toi-3.4.patch
   fi
 
   # --> BFQ
   if [ $BFQ_IO_SCHEDULER = "y" ] ; then
     msg "Patching source with BFQ patches"
-    patch -Np1 -i ${srcdir}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v3r3-3.3.patch
-    patch -Np1 -i ${srcdir}/0002-block-introduce-the-BFQ-v3r3-I-O-sched-for-3.3.patch
+    patch -Np1 -i ${srcdir}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v3r4-3.4.patch
+    patch -Np1 -i ${srcdir}/0002-block-introduce-the-BFQ-v3r4-I-O-sched-for-3.4.patch
   fi
 
   # --> uKSM
   if [ $UKSM = "y" ] ; then
     msg "Patching source with uKSM patch"
-    patch -Np1 -i ${srcdir}/uksm-0.1.1-for-3.3.4.patch
+    patch -Np1 -i ${srcdir}/uksm-0.1.1.1-for-v3.4.ge.0.patch
     # UKSM with hight config_hz
     #patch -Np1 -i ${srcdir}/0001-UKSM-let-the-default-uksm_sleep_jiffies-10-msecs.patch
     # Fix libc crash with UKSM
-    patch -Np1 -i ${srcdir}/0002-UKSM-Fix-a-libc-crash-introduced-by-uksm-zero-pfn.patch
+    #patch -Np1 -i ${srcdir}/0002-UKSM-Fix-a-libc-crash-introduced-by-uksm-zero-pfn.patch
   fi
 
   ### Clean tree and copy config file over
@@ -237,7 +226,7 @@ build() {
 
 package_kernel-netbook() {
   pkgdesc='Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) - Only Intel GPU - Give more power to your netbook!'
-  depends=('coreutils' 'module-init-tools')
+  depends=('coreutils' 'kmod')
   install=kernel-netbook.install
   optdepends=('crda: for wireless regulatory domain support' 
 	      'linux-firmware: firmware for rt2860, tigon3, brcmsmac'
@@ -427,3 +416,6 @@ package_kernel-netbook-headers() {
   # remove unneeded architectures
   rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arm,arm26,avr32,blackfin,cris,frv,h8300,ia64,m32r,m68k,m68knommu,mips,microblaze,mn10300,parisc,powerpc,ppc,s390,sh,sh64,sparc,sparc64,um,v850,xtensa}
 }
+
+##
+pkgdesk="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) - Only Intel GPU - Give more power to your netbook!"
