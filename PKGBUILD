@@ -41,7 +41,7 @@ makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.4
 pkgver=${_basekernel}.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686')
@@ -70,7 +70,7 @@ md5sums=('146af0160fc7a60cf9acf44aec13482b'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '263725f20c0b9eb9c353040792d644e5'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         '718d78efd812e52a88288d05c0c97f9a')
+         '27a95a8b32c5aca5a00a1f985d272a7d')
 #############################################
 #  external drivers, firmware and variables #
 #############################################
@@ -271,11 +271,13 @@ package_kernel-netbook() {
     msg "Compiling broadcom-wl module:"
     cd ${srcdir}/
     #patching broadcom as broadcom-wl package on AUR
-    patch -p1 -i 0005-add-support-for-linux-3.4.0.patch
+    cat 0005-add-support-for-linux-3.4.0.patch | tail -12 > broadcom-3.4.patch
+    sed -i -e "s|i386/||g" broadcom-3.4.patch
     patch -p1 -i linux3.patch
     patch -p1 -i license.patch
     patch -p1 -i multicast.patch
     patch -p1 -i semaphore.patch
+    patch -p1 -i broadcom-3.4.patch
     make -C ${srcdir}/linux-$_basekernel M=`pwd`
     install -D -m 755 wl.ko ${pkgdir}/lib/modules/${_extramodules}/wl.ko
   fi
