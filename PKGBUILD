@@ -2,7 +2,7 @@
 # Thanks to graysky for a lot of features in this PKGBUILD
 
 BFQ_IO_SCHEDULER="y"
-TUX_ON_ICE="n" #Use the HEAD patch by git tree
+TUX_ON_ICE="y" #Use the HEAD patch by git tree
 BROADCOM_WL="n"
 LOCALMODCONFIG="n"
 USE_CURRENT="n"
@@ -40,7 +40,7 @@ true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.4
-pkgver=${_basekernel}
+pkgver=${_basekernel}.1
 pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
@@ -50,11 +50,13 @@ url=('http://code.google.com/p/kernel-netbook')
 
 ####################################
 md5sums=('146af0160fc7a60cf9acf44aec13482b'
+	 '7cf316c7fca8f31e584c65fa1e19517c'
          '62d04d148b99f993ef575a71332593a9'
+	 '23b388c92efa35361967c15623f7249a'
          '326d9b24ca483f077c792500ec2cdf55'
          'ce3b3d2a376f81a55559406db68a3a27'
          'a13f85b218ce6e85fdd7b6c9878c424c'
-         'dbbaae554401eb4136086bb41ab785e4'
+         'a33f543e09e55a9142914d10d141af83'
          '31c9613d6c29091675b1a54822e86531'
          '55f74c824ce35b5467c71c90bc8a24c7'
          '5475914ee884a87393690b17e4d66105'
@@ -62,13 +64,13 @@ md5sums=('146af0160fc7a60cf9acf44aec13482b'
          '5974286ba3e9716bfbad83d3f4ee985a'
          'a6f0377c814da594cffcacbc0785ec1a'
          '3f79843b6b1a3f7e8041eb8ed86e4ff5'
-         '2bb172117ede96c14289f9f9bc34f58f'
-         'aee89fe7f034aea2f2ca95322774c1b5'
+         '160a6054ceca92db60898852983a42d4'
+         '1fc30833a8cc461266e6310fbd15e2f3'
          '1f0ab857c69754c992b0d1d871b8cc66'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '263725f20c0b9eb9c353040792d644e5'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         'a7e7b77d04bae96a19a7c618fea4646c')
+         '718d78efd812e52a88288d05c0c97f9a')
 #############################################
 #  external drivers, firmware and variables #
 #############################################
@@ -88,10 +90,10 @@ _uksm="http://kerneldedup.org/download/uksm/0.1.1.1/patches"
 ##### Sources #####
 source=( #kernel sources and arch patchset
 	"http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
-	#"http://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
-	#"ftp://ftp.archlinux.org/other/linux/patch-${pkgver}.gz"
+	"http://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
 	##external drivers:
 	"http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz"
+	"https://launchpadlibrarian.net/104465708/0005-add-support-for-linux-3.4.0.patch"
 	#BFS patch:
 	"http://ck.kolivas.org/patches/3.0/3.4/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
@@ -101,7 +103,7 @@ source=( #kernel sources and arch patchset
 	#"http://tuxonice.net/files/${_toipatch}"
 	#"http://user.it.uu.se/~mikpe/linux/patches/tuxonice/${_toipatch}"
 	#"http://chakra-linux.org/sources/linux/patches/3.2/features/tuxonice/${_toipatch}.xz"
-	"toi-3.4.patch"
+	"toi-3.4.1.patch"
 	#uKSM
 	"${_uksm}/uksm-0.1.1.1-for-v3.4.ge.0.patch"
 	"${_uksm}/0001-UKSM-let-the-default-uksm_sleep_jiffies-10-msecs.patch"
@@ -128,8 +130,8 @@ build() {
   # Patching Time:
 
   # minorversion patch:
-  #msg "Minorversion patch"
-  #patch -p1 -i "${srcdir}/patch-${pkgver}"
+  msg "Minorversion patch"
+  patch -p1 -i "${srcdir}/patch-${pkgver}"
 
   # Some chips detect a ghost TV output
   # mailing list discussion: http://lists.freedesktop.org/archives/intel-gfx/2011-April/010371.html
@@ -160,7 +162,7 @@ build() {
   # --> TOI
   if [ $TUX_ON_ICE = "y" ] ; then
     msg "Patching source with TuxOnIce patch"
-    patch -Np1 -F4 -i ${srcdir}/toi-3.4.patch
+    patch -Np1 -i ${srcdir}/toi-3.4.1.patch
   fi
 
   # --> BFQ
@@ -269,6 +271,7 @@ package_kernel-netbook() {
     msg "Compiling broadcom-wl module:"
     cd ${srcdir}/
     #patching broadcom as broadcom-wl package on AUR
+    patch -p1 -i 0005-add-support-for-linux-3.4.0.patch
     patch -p1 -i linux3.patch
     patch -p1 -i license.patch
     patch -p1 -i multicast.patch
