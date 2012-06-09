@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/i386 3.4.0 Kernel Configuration
+# Linux/i386 3.4.1 Kernel Configuration
 #
 # CONFIG_64BIT is not set
 CONFIG_X86_32=y
@@ -1372,7 +1372,7 @@ CONFIG_SLHC=m
 CONFIG_USB_USBNET=m
 CONFIG_USB_NET_AX8817X=m
 CONFIG_USB_NET_CDCETHER=m
-# CONFIG_USB_NET_CDC_EEM is not set
+CONFIG_USB_NET_CDC_EEM=m
 # CONFIG_USB_NET_CDC_NCM is not set
 CONFIG_USB_NET_DM9601=m
 # CONFIG_USB_NET_SMSC75XX is not set
