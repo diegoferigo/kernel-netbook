@@ -114,7 +114,6 @@ source=( #kernel sources and arch patchset
 	"multicast.patch"
 	"change-default-console-loglevel.patch"
 	"i915-fix-ghost-tv-output.patch"
-	#"ext4-options.patch"
 	"kernel-netbook.preset"
 	"config")
 	
