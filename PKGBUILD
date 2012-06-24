@@ -40,7 +40,7 @@ true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'firmware-brcm80211-git')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.4
-pkgver=${_basekernel}.2
+pkgver=${_basekernel}.3
 pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
@@ -50,7 +50,7 @@ url=('http://code.google.com/p/kernel-netbook')
 
 ####################################
 md5sums=('146af0160fc7a60cf9acf44aec13482b'
-         '7d374bab01fb5b37c7ae4c2c4d2999ea'
+         '5362b86a64c0c088852277a6ea5d1b2c'
          '62d04d148b99f993ef575a71332593a9'
          '23b388c92efa35361967c15623f7249a'
          'd3489e362932f01b5ae7e8b8a2691df6'
@@ -68,7 +68,7 @@ md5sums=('146af0160fc7a60cf9acf44aec13482b'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '263725f20c0b9eb9c353040792d644e5'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         'b539fb79290be897691ea7b846fbb4ec')
+         'c511f1dce15d8007bc0ea282871005c4')
 #############################################
 #  external drivers, firmware and variables #
 #############################################
