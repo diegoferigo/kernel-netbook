@@ -82,7 +82,7 @@ _ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
 _bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.4.0-v3r4"
 #TuxOnIce:
-#
+_toipatch="tuxonice-3.3-for-Linux-3.4.patch"
 #uKSM:
 _uksm="http://kerneldedup.org/download/uksm/0.1.1.2"
 ##### Sources #####
@@ -98,10 +98,7 @@ source=( #kernel sources and arch patchset
 	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v3r4-3.4.patch"
 	"${_bfqpath}/0002-block-introduce-the-BFQ-v3r4-I-O-sched-for-3.4.patch"
 	#TuxOnIce:
-	#"http://tuxonice.net/files/${_toipatch}"
-	#"http://user.it.uu.se/~mikpe/linux/patches/tuxonice/${_toipatch}"
-	#"http://chakra-linux.org/sources/linux/patches/3.2/features/tuxonice/${_toipatch}.xz"
-	"toi-3.4.1.patch"
+	"${_toipatch}"
 	#uKSM
 	"${_uksm}/uksm-0.1.1.2-for-v3.4.ge.2.patch"
 	"logo_linux_mono.pbm"
