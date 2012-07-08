@@ -40,7 +40,7 @@ true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'firmware-brcm80211-git')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.4
-pkgver=${_basekernel}.3
+pkgver=${_basekernel}.4
 pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
@@ -50,13 +50,13 @@ url=('http://code.google.com/p/kernel-netbook')
 
 ####################################
 md5sums=('146af0160fc7a60cf9acf44aec13482b'
-         '5362b86a64c0c088852277a6ea5d1b2c'
+         '51d5b74c3523c5dd8d0f4d1a7abb68be'
          '62d04d148b99f993ef575a71332593a9'
          '23b388c92efa35361967c15623f7249a'
          'd3489e362932f01b5ae7e8b8a2691df6'
          'ce3b3d2a376f81a55559406db68a3a27'
          'a13f85b218ce6e85fdd7b6c9878c424c'
-         'a33f543e09e55a9142914d10d141af83'
+         '817848198341ca1200f811caf29adc12'
          '9fda8de0572b668303dc4617c6c0532c'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
@@ -153,7 +153,7 @@ build() {
   # --> TOI
   if [ $TUX_ON_ICE = "y" ] ; then
     msg "Patching source with TuxOnIce patch"
-    patch -Np1 -i ${srcdir}/toi-3.4.1.patch
+    patch -Np1 -i ${srcdir}/${_toipatch}
   fi
 
   # --> BFQ
@@ -201,6 +201,9 @@ build() {
 		make localmodconfig
 	fi
 
+  # don't run depmod on 'make install'. We'll do this ourselves in packaging
+  sed -i '2iexit 0' scripts/depmod.sh
+
   # make defconfig
   # configure kernel    
   # use menuconfig, if you want to change the configuration
@@ -228,7 +231,7 @@ package_kernel-netbook() {
   # install our modules
   mkdir -p $pkgdir/{lib/modules,boot}
   make INSTALL_MOD_PATH=$pkgdir modules_install
-  
+
   # Get kernel version
   _kernver="$(make kernelrelease)"
 
@@ -277,6 +280,13 @@ package_kernel-netbook() {
   # add real version for building modules and running depmod from post_install/upgrade
   mkdir -p "${pkgdir}/lib/modules/${_extramodules}"
   echo "${_kernver}" > "${pkgdir}/lib/modules/${_extramodules}/version"
+
+  # move module tree /lib -> /usr/lib
+  mkdir $pkgdir/usr
+  mv "$pkgdir/lib" "$pkgdir/usr/"
+
+  # Now we call depmod...
+  depmod -b "$pkgdir/usr" -F $pkgdir/boot/System.map-netbook "$_kernver"
 }
 
 package_kernel-netbook-headers() {
@@ -284,10 +294,10 @@ package_kernel-netbook-headers() {
   pkgdesc='Header files and scripts for building modules for kernel-netbook'
   provides=('linux-headers')
 
-  mkdir -p "${pkgdir}/lib/modules/${_kernver}"
+  install -dm755 "${pkgdir}/usr/lib/modules/${_kernver}"
 
-  cd "${pkgdir}/lib/modules/${_kernver}"
-  ln -sf ../../../usr/src/linux-${_kernver} build
+  cd "${pkgdir}/usr/lib/modules/${_kernver}"
+  ln -sf ../../../src/linux-${_kernver} build
 
   cd "${srcdir}/linux-${_basekernel}"
   install -D -m644 Makefile \
