@@ -2,7 +2,7 @@
 # Thanks to graysky for a lot of features in this PKGBUILD
 
 BFQ_IO_SCHEDULER="y"
-TUX_ON_ICE="y" #Use the HEAD patch by git tree
+TUX_ON_ICE="y"
 BROADCOM_WL="n"
 LOCALMODCONFIG="n"
 USE_CURRENT="n"
@@ -68,7 +68,7 @@ md5sums=('146af0160fc7a60cf9acf44aec13482b'
          '9d3c56a4b999c8bfbd4018089a62f662'
          '263725f20c0b9eb9c353040792d644e5'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         'c511f1dce15d8007bc0ea282871005c4')
+         '1a0964a4874ba9b1331d2d7cb3e03b3d')
 #############################################
 #  external drivers, firmware and variables #
 #############################################
@@ -281,12 +281,13 @@ package_kernel-netbook() {
   mkdir -p "${pkgdir}/lib/modules/${_extramodules}"
   echo "${_kernver}" > "${pkgdir}/lib/modules/${_extramodules}/version"
 
+  cd ${srcdir}/linux-${_basekernel}
   # move module tree /lib -> /usr/lib
   mkdir $pkgdir/usr
   mv "$pkgdir/lib" "$pkgdir/usr/"
 
   # Now we call depmod...
-  depmod -b "$pkgdir/usr" -F $pkgdir/boot/System.map-netbook "$_kernver"
+  depmod -b "$pkgdir/usr" -F System.map "$_kernver"
 }
 
 package_kernel-netbook-headers() {
