@@ -1,7 +1,6 @@
 # Maintainer: Dieghen89 <dieghen89@gmail.com>
 # Thanks to graysky for a lot of features in this PKGBUILD
 
-BFQ_IO_SCHEDULER="y"
 TUX_ON_ICE="y"
 BROADCOM_WL="n"
 LOCALMODCONFIG="n"
@@ -9,10 +8,6 @@ USE_CURRENT="n"
 UKSM="y"
 
 ### HOW-TO:
-#
-## >> Details for: BFQ_IO_SCHEDULER
-#		Set it to "n" if you don't want the module compiled.
-#		In any case, it isn't the default io-scheduler
 #
 ## >> Details for: TUX_ON_ICE
 #		Set it to "n" you you don't want the Tux On Ice support
@@ -33,6 +28,9 @@ UKSM="y"
 ## >> Details for: UKSM
 #		Set it to "y" to enable the testing uKSM patch, more info here:
 #		http://kerneldedup.org
+#
+## >> The previous BFQ_IO_SCHEDULER is useless, read the wiki page in google code
+#
 ##########
  
 pkgname=kernel-netbook
@@ -54,10 +52,10 @@ md5sums=('146af0160fc7a60cf9acf44aec13482b'
          '62d04d148b99f993ef575a71332593a9'
          '23b388c92efa35361967c15623f7249a'
          'd3489e362932f01b5ae7e8b8a2691df6'
-         'ce3b3d2a376f81a55559406db68a3a27'
-         'a13f85b218ce6e85fdd7b6c9878c424c'
+         '5c0552440670dd3c41629346766cdb4a'
+         'da1584d485b4bc604d8208b50a6acf42'
          '817848198341ca1200f811caf29adc12'
-         '9fda8de0572b668303dc4617c6c0532c'
+         '8c3e046e9f30aa2db69c02fa3a701746'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
          'a6f0377c814da594cffcacbc0785ec1a'
@@ -80,7 +78,7 @@ broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
 _ckpatchversion=2
 _ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
-_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.4.0-v3r4"
+_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.5.0-v4"
 #TuxOnIce:
 _toipatch="tuxonice-3.3-for-Linux-3.4.patch"
 #uKSM:
@@ -96,8 +94,8 @@ source=( #kernel sources and arch patchset
 	#BFS patch:
 	"http://ck.kolivas.org/patches/3.0/3.4/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
-	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v3r4-3.4.patch"
-	"${_bfqpath}/0002-block-introduce-the-BFQ-v3r4-I-O-sched-for-3.4.patch"
+	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v4-3.5.patch"
+	"${_bfqpath}/0002-block-introduce-the-BFQ-v4-I-O-sched-for-3.5.patch"
 	#TuxOnIce:
 	"${_toipatch}"
 	#uKSM
@@ -158,11 +156,10 @@ build() {
   fi
 
   # --> BFQ
-  if [ $BFQ_IO_SCHEDULER = "y" ] ; then
-    msg "Patching source with BFQ patches"
-    patch -Np1 -i ${srcdir}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v3r4-3.4.patch
-    patch -Np1 -i ${srcdir}/0002-block-introduce-the-BFQ-v3r4-I-O-sched-for-3.4.patch
-  fi
+  msg "Patching source with BFQ patches"
+  for patch in $(ls ${srcdir}/000*BFQ*.patch) ; do
+    patch -Np1 -i $patch
+  done
 
   # --> uKSM
   if [ $UKSM = "y" ] ; then
