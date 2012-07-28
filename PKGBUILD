@@ -84,7 +84,8 @@ _bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.4.0-v3r4"
 #TuxOnIce:
 _toipatch="tuxonice-3.3-for-Linux-3.4.patch"
 #uKSM:
-_uksm="http://kerneldedup.org/download/uksm/0.1.1.2"
+_uksm="http://kerneldedup.org/download/uksm/0.1.2"
+_uksm_name="uksm-0.1.2-for-v3.5"
 ##### Sources #####
 source=( #kernel sources and arch patchset
 	"http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
@@ -100,7 +101,7 @@ source=( #kernel sources and arch patchset
 	#TuxOnIce:
 	"${_toipatch}"
 	#uKSM
-	"${_uksm}/uksm-0.1.1.2-for-v3.4.ge.2.patch"
+	"${_uksm}/${_uksm_name}.patch"
 	"logo_linux_mono.pbm"
 	"logo_linux_clut224.ppm"
 	"logo_linux_vga16.ppm"
@@ -166,7 +167,7 @@ build() {
   # --> uKSM
   if [ $UKSM = "y" ] ; then
     msg "Patching source with uKSM patch"
-    patch -Np1 -i ${srcdir}/uksm-0.1.1.2-for-v3.4.ge.2.patch
+    patch -Np1 -i ${srcdir}/${_uksm_name}.patch
   fi
 
   ### Clean tree and copy config file over
