@@ -5,7 +5,7 @@ TUX_ON_ICE="y"
 BROADCOM_WL="n"
 LOCALMODCONFIG="n"
 USE_CURRENT="n"
-UKSM="y"
+UKSM="n"
 
 ### HOW-TO:
 #
@@ -37,8 +37,8 @@ pkgname=kernel-netbook
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
-_basekernel=3.5
-pkgver=${_basekernel}.2
+_basekernel=3.6
+pkgver=${_basekernel}.1
 pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
@@ -47,13 +47,13 @@ license=('GPL2')
 url=('http://code.google.com/p/kernel-netbook')
 
 ####################################
-md5sums=('3ed693d5dee4f4aa05e15d3c19f6cf01'
-         '128f05bf03ba7e772286b2066eab439c'
+md5sums=('575c735175532201f1bbd6ec99712b55'
+         'cb1ad7822d729a0e86a20859d05c0dda'
          '62d04d148b99f993ef575a71332593a9'
-         '509b8842747a9a341e106e7189843cdb'
+         'ac4c4ff4ea110336b2879fef58dd8751'
          '5c0552440670dd3c41629346766cdb4a'
          'da1584d485b4bc604d8208b50a6acf42'
-	 '9f9d8f17904311b0ab2cdc5d6ea7430c'
+         '4f8b8f819cbea3447df9416708229402'
          '8c3e046e9f30aa2db69c02fa3a701746'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
@@ -63,7 +63,7 @@ md5sums=('3ed693d5dee4f4aa05e15d3c19f6cf01'
          '1e06c9b7d92d61eab05e970116837144'
          '9d3c56a4b999c8bfbd4018089a62f662'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         '39c7433b29c85288688f728d386ffccc')
+         '53a9211e97a89c8724e7d66e6de5ad9e')
 #############################################
 #  external drivers, firmware and variables #
 #############################################
@@ -73,12 +73,13 @@ broadcom_ver=5.100.82.112
 broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
 #BFS: - http://users.on.net/~ckolivas/kernel/ -
 _ckpatchversion=1
-_ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
+#_ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
+_ckpatchname="patch-3.6-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
 _bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.5.0-v4"
 #TuxOnIce:
 #_toipatch="tuxonice-3.3-for-Linux-3.4.patch"
-_toipatch="toi-3.5.patch"
+_toipatch="toi-3.6.patch"
 #uKSM:
 _uksm="http://kerneldedup.org/download/uksm/0.1.2"
 _uksm_name="uksm-0.1.2-for-v3.5"
@@ -89,7 +90,8 @@ source=( #kernel sources and arch patchset
 	##external drivers:
 	"http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz"
 	#BFS patch:
-	"http://ck.kolivas.org/patches/3.0/3.5/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
+	#"http://ck.kolivas.org/patches/3.0/3.5/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
+	http://repo-ck.com/PKG_source/testing/unofficial_patchset_from_martin/patch-3.6-ck1.bz2
 	#BFQ patch:
 	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v4-3.5.patch"
 	"${_bfqpath}/0002-block-introduce-the-BFQ-v4-I-O-sched-for-3.5.patch"
