@@ -63,7 +63,7 @@ md5sums=('575c735175532201f1bbd6ec99712b55'
          '1e06c9b7d92d61eab05e970116837144'
          '9d3c56a4b999c8bfbd4018089a62f662'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         '92216fe06181ac53ef31cb7e271815fd')
+         '5ac5ce2fe15c66c86ceed54c38cb9e8f')
 #############################################
 #  external drivers, firmware and variables #
 #############################################
