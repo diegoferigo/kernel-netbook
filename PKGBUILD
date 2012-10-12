@@ -268,7 +268,7 @@ package_kernel-netbook() {
   mv "$pkgdir/lib" "$pkgdir/usr/"
 
   # Now we call depmod...
-  depmod -b "$pkgdir" -F System.map "$_kernver"
+  depmod -b "$pkgdir/usr" -F System.map "$_kernver"
 }
 
 package_kernel-netbook-headers() {
