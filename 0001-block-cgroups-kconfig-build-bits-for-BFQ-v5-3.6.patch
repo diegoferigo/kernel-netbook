@@ -1,7 +1,7 @@
-From da321fa80a9e09a6a5c1fb9afd337e55d7152338 Mon Sep 17 00:00:00 2001
+From ad604b47681055f6583b6fd202dc29f2d998a8c7 Mon Sep 17 00:00:00 2001
 From: Arianna Avanzini <avanzini.arianna@gmail.com>
 Date: Sat, 4 Feb 2012 10:55:51 +0100
-Subject: [PATCH 1/2] block: cgroups, kconfig, build bits for BFQ-v4-3.5
+Subject: [PATCH 1/2] block: cgroups, kconfig, build bits for BFQ-v5-3.6
 
 Update Kconfig.iosched to include kernel configuration options
 for BFQ. Add a Kconfig option and do the related Makefile changes
@@ -81,10 +81,10 @@ index 39b76ba..c0d20fa 100644
  obj-$(CONFIG_BLOCK_COMPAT)	+= compat_ioctl.o
  obj-$(CONFIG_BLK_DEV_INTEGRITY)	+= blk-integrity.o
 diff --git a/include/linux/cgroup_subsys.h b/include/linux/cgroup_subsys.h
-index 0bd390c..cbf22b1 100644
+index dfae957..e3b64ec 100644
 --- a/include/linux/cgroup_subsys.h
 +++ b/include/linux/cgroup_subsys.h
-@@ -72,3 +72,9 @@ SUBSYS(net_prio)
+@@ -78,3 +78,9 @@ SUBSYS(hugetlb)
  #endif
  
  /* */

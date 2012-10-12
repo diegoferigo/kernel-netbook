@@ -1,9 +1,9 @@
-From ec70f8bce2417acf290ad4169ee4dc5c302ea6c6 Mon Sep 17 00:00:00 2001
+From 29b7819810a469ac36db6c34172c6efc5cbe5a74 Mon Sep 17 00:00:00 2001
 From: Arianna Avanzini <avanzini.arianna@gmail.com>
 Date: Sun, 5 Feb 2012 01:04:27 +0100
-Subject: [PATCH 2/2] block: introduce the BFQ-v4 I/O sched for 3.5
+Subject: [PATCH 2/2] block: introduce the BFQ-v5 I/O sched for 3.6
 
-Add the BFQ-v4 I/O scheduler to 3.5.
+Add the BFQ-v5 I/O scheduler to 3.6.
 The general structure is borrowed from CFQ, as much code. A (bfq_)queue is
 associated to each task doing I/O on a device, and each time a scheduling
 decision has to be taken a queue is selected and it is served until it expires.
@@ -48,12 +48,12 @@ decision has to be taken a queue is selected and it is served until it expires.
 Signed-off-by: Paolo Valente <paolo.valente@unimore.it>
 Signed-off-by: Arianna Avanzini <avanzini.arianna@gmail.com>
 ---
- block/bfq-cgroup.c  |  833 +++++++++++++++
+ block/bfq-cgroup.c  |  833 ++++++++++++++
  block/bfq-ioc.c     |   34 +
- block/bfq-iosched.c | 2941 +++++++++++++++++++++++++++++++++++++++++++++++++++
- block/bfq-sched.c   | 1070 +++++++++++++++++++
- block/bfq.h         |  596 +++++++++++
- 5 files changed, 5474 insertions(+)
+ block/bfq-iosched.c | 2999 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ block/bfq-sched.c   | 1070 ++++++++++++++++++
+ block/bfq.h         |  599 ++++++++++
+ 5 files changed, 5535 insertions(+)
  create mode 100644 block/bfq-cgroup.c
  create mode 100644 block/bfq-ioc.c
  create mode 100644 block/bfq-iosched.c
@@ -941,10 +941,10 @@ index 0000000..af791d2
 +}
 diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
 new file mode 100644
-index 0000000..6fd4ea0
+index 0000000..a75946b
 --- /dev/null
 +++ b/block/bfq-iosched.c
-@@ -0,0 +1,2941 @@
+@@ -0,0 +1,2999 @@
 +/*
 + * BFQ, or Budget Fair Queueing, disk scheduler.
 + *
@@ -1057,6 +1057,23 @@ index 0000000..6fd4ea0
 +
 +/* Shift used for peak rate fixed precision calculations. */
 +#define BFQ_RATE_SHIFT		16
++
++/*
++ * The duration of the weight raising for interactive applications is
++ * computed automatically (as default behaviour), using the following
++ * formula: duration = (R / r) * T, where r is the peak rate of the
++ * disk, and R and T are two reference parameters. In particular, R is
++ * the peak rate of a reference disk, and T is about the maximum time
++ * for starting popular large applications on that disk, under BFQ and
++ * while reading two files in parallel. Finally, BFQ uses two
++ * different pairs (R, T) depending on whether the disk is rotational
++ * or non-rotational.
++ */
++#define T_rot			(msecs_to_jiffies(5500))
++#define T_nonrot		(msecs_to_jiffies(2000))
++/* Next two quantities are in sectors/usec, left-shifted by BFQ_RATE_SHIFT */
++#define R_rot			17415
++#define R_nonrot		34791
 +
 +#define BFQ_SERVICE_TREE_INIT	((struct bfq_service_tree)		\
 +				{ RB_ROOT, RB_ROOT, NULL, NULL, 0, 0 })
@@ -1357,6 +1374,19 @@ index 0000000..6fd4ea0
 +	bfq_activate_bfqq(bfqd, bfqq);
 +}
 +
++static inline unsigned int bfq_wrais_duration(struct bfq_data *bfqd)
++{
++	u64 dur;
++
++	if (bfqd->bfq_raising_max_time > 0)
++		return bfqd->bfq_raising_max_time;
++
++	dur = bfqd->RT_prod;
++	do_div(dur, bfqd->peak_rate);
++
++	return dur;
++}
++
 +static void bfq_add_rq_rb(struct request *rq)
 +{
 +	struct bfq_queue *bfqq = RQ_BFQQ(rq);
@@ -1402,9 +1432,12 @@ index 0000000..6fd4ea0
 +		 */
 +		if(old_raising_coeff == 1 && (idle_for_long_time || soft_rt)) {
 +			bfqq->raising_coeff = bfqd->bfq_raising_coeff;
-+			bfqq->raising_cur_max_time = idle_for_long_time ?
-+				bfqd->bfq_raising_max_time :
-+				bfqd->bfq_raising_rt_max_time;
++			if (idle_for_long_time)
++				bfqq->raising_cur_max_time =
++					bfq_wrais_duration(bfqd);
++			else
++				bfqq->raising_cur_max_time =
++					bfqd->bfq_raising_rt_max_time;
 +			bfq_log_bfqq(bfqd, bfqq,
 +				     "wrais starting at %llu msec,"
 +				     "rais_max_time %u",
@@ -1414,7 +1447,7 @@ index 0000000..6fd4ea0
 +		} else if (old_raising_coeff > 1) {
 +			if (idle_for_long_time)
 +				bfqq->raising_cur_max_time =
-+					bfqd->bfq_raising_max_time;
++					bfq_wrais_duration(bfqd);
 +			else if (bfqq->raising_cur_max_time ==
 +				 bfqd->bfq_raising_rt_max_time &&
 +				 !soft_rt) {
@@ -1437,7 +1470,7 @@ index 0000000..6fd4ea0
 +			bfqq->last_rais_start_finish +
 +                        bfqd->bfq_raising_min_inter_arr_async < jiffies) {
 +                        bfqq->raising_coeff = bfqd->bfq_raising_coeff;
-+			bfqq->raising_cur_max_time = bfqd->bfq_raising_max_time;
++			bfqq->raising_cur_max_time = bfq_wrais_duration(bfqd);
 +
 +			entity->ioprio_changed = 1;
 +			bfq_log_bfqq(bfqd, bfqq,
@@ -1749,8 +1782,10 @@ index 0000000..6fd4ea0
 + */
 +static inline unsigned long bfq_max_budget(struct bfq_data *bfqd)
 +{
-+	return bfqd->budgets_assigned < 194 ? bfq_default_max_budget :
-+		bfqd->bfq_max_budget;
++	if (bfqd->budgets_assigned < 194)
++		return bfq_default_max_budget;
++	else
++		return bfqd->bfq_max_budget;
 +}
 +
 +/*
@@ -1759,8 +1794,10 @@ index 0000000..6fd4ea0
 + */
 +static inline unsigned long bfq_min_budget(struct bfq_data *bfqd)
 +{
-+	return bfqd->budgets_assigned < 194 ? bfq_default_max_budget / 32 :
-+		bfqd->bfq_max_budget / 32;
++	if (bfqd->budgets_assigned < 194)
++		return bfq_default_max_budget;
++	else
++		return bfqd->bfq_max_budget / 32;
 +}
 +
 +/*
@@ -1836,9 +1873,11 @@ index 0000000..6fd4ea0
 +static void bfq_set_budget_timeout(struct bfq_data *bfqd)
 +{
 +	struct bfq_queue *bfqq = bfqd->active_queue;
-+	unsigned int timeout_coeff =
-+		bfqq->raising_cur_max_time == bfqd->bfq_raising_rt_max_time ?
-+		1 : (bfqq->entity.weight / bfqq->entity.orig_weight);
++	unsigned int timeout_coeff;
++	if (bfqq->raising_cur_max_time == bfqd->bfq_raising_rt_max_time)
++		timeout_coeff = 1;
++	else
++		timeout_coeff = bfqq->entity.weight / bfqq->entity.orig_weight;
 +
 +	bfqd->last_budget_start = ktime_get();
 +
@@ -2148,7 +2187,10 @@ index 0000000..6fd4ea0
 +	if (!bfq_bfqq_sync(bfqq) || bfq_bfqq_budget_new(bfqq))
 +		return 0;
 +
-+	delta = compensate ? bfqd->last_idling_start : ktime_get();
++	if (compensate)
++		delta = bfqd->last_idling_start;
++	else
++		delta = ktime_get();
 +	delta = ktime_sub(delta, bfqd->last_budget_start);
 +	usecs = ktime_to_us(delta);
 +
@@ -3582,10 +3624,19 @@ index 0000000..6fd4ea0
 +
 +	bfqd->bfq_raising_coeff = 20;
 +	bfqd->bfq_raising_rt_max_time = msecs_to_jiffies(300);
-+	bfqd->bfq_raising_max_time = msecs_to_jiffies(7500);
++	bfqd->bfq_raising_max_time = 0;
 +	bfqd->bfq_raising_min_idle_time = msecs_to_jiffies(2000);
 +	bfqd->bfq_raising_min_inter_arr_async = msecs_to_jiffies(500);
 +	bfqd->bfq_raising_max_softrt_rate = 7000;
++
++	/* Initially estimate the device's peak rate as the reference rate */
++	if (blk_queue_nonrot(bfqd->queue)) {
++		bfqd->RT_prod = R_nonrot * T_nonrot;
++		bfqd->peak_rate = R_nonrot;
++	} else {
++		bfqd->RT_prod = R_rot * T_rot;
++		bfqd->peak_rate = R_rot;
++	}
 +
 +	return 0;
 +}
@@ -3618,6 +3669,14 @@ index 0000000..6fd4ea0
 +		*var = new_val;
 +
 +	return count;
++}
++
++static ssize_t bfq_raising_max_time_show(struct elevator_queue *e, char *page)
++{
++	struct bfq_data *bfqd = e->elevator_data;
++	return sprintf(page, "%d\n", bfqd->bfq_raising_max_time > 0 ?
++		       bfqd->bfq_raising_max_time :
++		       bfq_wrais_duration(bfqd));
 +}
 +
 +static ssize_t bfq_weights_show(struct elevator_queue *e, char *page)
@@ -3677,7 +3736,6 @@ index 0000000..6fd4ea0
 +SHOW_FUNCTION(bfq_timeout_async_show, bfqd->bfq_timeout[BLK_RW_ASYNC], 1);
 +SHOW_FUNCTION(bfq_low_latency_show, bfqd->low_latency, 0);
 +SHOW_FUNCTION(bfq_raising_coeff_show, bfqd->bfq_raising_coeff, 0);
-+SHOW_FUNCTION(bfq_raising_max_time_show, bfqd->bfq_raising_max_time, 1);
 +SHOW_FUNCTION(bfq_raising_rt_max_time_show, bfqd->bfq_raising_rt_max_time, 1);
 +SHOW_FUNCTION(bfq_raising_min_idle_time_show, bfqd->bfq_raising_min_idle_time,
 +	1);
@@ -4964,12 +5022,12 @@ index 0000000..87bea97
 +}
 diff --git a/block/bfq.h b/block/bfq.h
 new file mode 100644
-index 0000000..24d1257
+index 0000000..548b365
 --- /dev/null
 +++ b/block/bfq.h
-@@ -0,0 +1,596 @@
+@@ -0,0 +1,599 @@
 +/*
-+ * BFQ-v4 for 3.5.0: data structures and common functions prototypes.
++ * BFQ-v5 for 3.6.0: data structures and common functions prototypes.
 + *
 + * Based on ideas and code from CFQ:
 + * Copyright (C) 2003 Jens Axboe <axboe@kernel.dk>
@@ -5292,6 +5350,8 @@ index 0000000..24d1257
 + *				     (in jiffies)
 + * @bfq_raising_max_softrt_rate: max service-rate for a soft real-time queue,
 + *			         sectors per seconds
++ * @RT_prod: cached value of the product R*T used for computing the maximum
++ * 	     duration of the weight raising automatically
 + * @oom_bfqq: fallback dummy bfqq for extreme OOM conditions
 + *
 + * All the fields are protected by the @queue lock.
@@ -5352,6 +5412,7 @@ index 0000000..24d1257
 +	unsigned int bfq_raising_min_idle_time;
 +	unsigned int bfq_raising_min_inter_arr_async;
 +	unsigned int bfq_raising_max_softrt_rate;
++	u64 RT_prod;
 +
 +	struct bfq_queue oom_bfqq;
 +};

@@ -51,8 +51,8 @@ md5sums=('575c735175532201f1bbd6ec99712b55'
          'cb1ad7822d729a0e86a20859d05c0dda'
          '62d04d148b99f993ef575a71332593a9'
          'ac4c4ff4ea110336b2879fef58dd8751'
-         '5c0552440670dd3c41629346766cdb4a'
-         'da1584d485b4bc604d8208b50a6acf42'
+         'f8d5472706d94a2707dd53bad5ccd00e'
+         'b5df48a60787f0abe275fe9df1bbef35'
          '4f8b8f819cbea3447df9416708229402'
          '8c3e046e9f30aa2db69c02fa3a701746'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
@@ -76,7 +76,7 @@ _ckpatchversion=1
 #_ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 _ckpatchname="patch-3.6-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
-_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.5.0-v4"
+_bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.6.0-v5"
 #TuxOnIce:
 #_toipatch="tuxonice-3.3-for-Linux-3.4.patch"
 _toipatch="toi-3.6.patch"
@@ -93,8 +93,8 @@ source=( #kernel sources and arch patchset
 	#"http://ck.kolivas.org/patches/3.0/3.5/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	http://repo-ck.com/PKG_source/testing/unofficial_patchset_from_martin/patch-3.6-ck1.bz2
 	#BFQ patch:
-	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v4-3.5.patch"
-	"${_bfqpath}/0002-block-introduce-the-BFQ-v4-I-O-sched-for-3.5.patch"
+	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v5-3.6.patch"
+	"${_bfqpath}/0002-block-introduce-the-BFQ-v5-I-O-sched-for-3.6.patch"
 	#TuxOnIce:
 	"${_toipatch}"
 	#uKSM
