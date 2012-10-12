@@ -246,11 +246,14 @@ package_kernel-netbook() {
   if [ "${BROADCOM_WL}" == "y" ] ; then
     msg "Compiling broadcom-wl module:"
     cd ${srcdir}/
+    cp -ar src/wl src/wl_orig
     patch -p1 -i linux-recent.patch
     patch -p1 -i license.patch
     patch -p1 -i user-ioctl.patch
     make -C ${srcdir}/linux-$_basekernel M=`pwd`
     install -D -m 755 wl.ko ${pkgdir}/lib/modules/${_extramodules}/wl.ko
+    rm src/wl/* && rmdif src/wl
+    mv src/wl_orig src/wl
   fi
 
   # gzip -9 all modules to safe a lot of MB of space
