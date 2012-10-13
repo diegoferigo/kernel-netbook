@@ -252,7 +252,7 @@ package_kernel-netbook() {
     patch -p1 -i user-ioctl.patch
     make -C ${srcdir}/linux-$_basekernel M=`pwd`
     install -D -m 755 wl.ko ${pkgdir}/lib/modules/${_extramodules}/wl.ko
-    rm src/wl/* && rmdif src/wl
+    rm src/wl/* && rmdir src/wl
     mv src/wl_orig src/wl
   fi
 
