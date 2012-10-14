@@ -73,8 +73,7 @@ broadcom_ver=5.100.82.112
 broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
 #BFS: - http://users.on.net/~ckolivas/kernel/ -
 _ckpatchversion=1
-#_ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
-_ckpatchname="patch-3.6-ck${_ckpatchversion}"
+_ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
 _bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.6.0-v5"
 #TuxOnIce:
@@ -90,8 +89,7 @@ source=( #kernel sources and arch patchset
 	##external drivers:
 	"http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz"
 	#BFS patch:
-	#"http://ck.kolivas.org/patches/3.0/3.5/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
-	http://repo-ck.com/PKG_source/testing/unofficial_patchset_from_martin/patch-3.6-ck1.bz2
+	"http://ck.kolivas.org/patches/3.0/3.6/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
 	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v5-3.6.patch"
 	"${_bfqpath}/0002-block-introduce-the-BFQ-v5-I-O-sched-for-3.6.patch"
