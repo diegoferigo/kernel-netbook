@@ -39,7 +39,7 @@ makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.6
 pkgver=${_basekernel}.2
-pkgrel=1
+pkgrel=2
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686')
@@ -63,7 +63,7 @@ md5sums=('575c735175532201f1bbd6ec99712b55'
          '1e06c9b7d92d61eab05e970116837144'
          '9d3c56a4b999c8bfbd4018089a62f662'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         '7bf5d4701d0d27313623a6ebc63f2bcb')
+         '1b10c5f5d7bd80cc8ce3b441bb1d3d81')
 #############################################
 #  external drivers, firmware and variables #
 #############################################
@@ -247,12 +247,12 @@ package_kernel-netbook() {
     msg "Compiling broadcom-wl module:"
     cd ${srcdir}/
     cp -ar src/wl src/wl_orig
-    patch -p1 -i linux-recent.patch
-    patch -p1 -i license.patch
-    patch -p1 -i user-ioctl.patch
+    patch -p1 -N -i linux-recent.patch
+    patch -p1 -N -i license.patch
+    patch -p1 -N -i user-ioctl.patch
     make -C ${srcdir}/linux-$_basekernel M=`pwd`
     install -D -m 755 wl.ko ${pkgdir}/lib/modules/${_extramodules}/wl.ko
-    rm src/wl/* && rmdir src/wl
+    rm -r src/wl
     mv src/wl_orig src/wl
   fi
 
