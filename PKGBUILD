@@ -115,8 +115,10 @@ build() {
   # Patching Time:
 
   # minorversion patch:
-  msg "Minorversion patch"
-  patch -p1 -i "${srcdir}/patch-${pkgver}"
+  if [ ! ${_basekernel} = $pkgver ] ; then
+    msg "Minorversion patch"
+    patch -p1 -i "${srcdir}/patch-${pkgver}"
+  fi
 
   # set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
   # remove this when a Kconfig knob is made available by upstream
