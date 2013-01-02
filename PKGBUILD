@@ -5,7 +5,7 @@ TUX_ON_ICE="y"
 BROADCOM_WL="n"
 LOCALMODCONFIG="n"
 USE_CURRENT="n"
-UKSM="n"
+UKSM="y"
 
 ### HOW-TO:
 #
@@ -54,7 +54,7 @@ md5sums=('5323f3faadd051e83af605a63be5ea2e'
          '9daa5f662145f91b25b91b9fbeb874d9'
          'c80954ae588d8c168a0b1ae9ffe84c0e'
          '0b79e1f3d8457513e85bb62ff838eb1d'
-         '396e269281a5d78d721a317796cfb5a6'
+         '1c2c5ac96842343a189e5e21e184ef7d'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
          'a6f0377c814da594cffcacbc0785ec1a'
@@ -79,8 +79,8 @@ _bfqpath="http://algo.ing.unimo.it/people/paolo/disk_sched/patches/3.7.0-v5r1"
 #TuxOnIce:
 _toipatch="toi-3.7.patch"
 #uKSM:
-_uksm="http://kerneldedup.org/download/uksm/0.1.2.1"
-_uksm_name="uksm-0.1.2.1-for-v3.6.ge.2"
+_uksm="http://kerneldedup.org/download/uksm/0.1.2.2"
+_uksm_name="uksm-0.1.2.2-for-v3.7.ge.1"
 ##### Sources #####
 source=( #kernel sources and arch patchset
 	"http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
