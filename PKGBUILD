@@ -2,10 +2,11 @@
 # Thanks to graysky for a lot of features in this PKGBUILD
 
 TUX_ON_ICE="y"
-BROADCOM_WL="n"
+BROADCOM_WL="y"
 LOCALMODCONFIG="n"
 USE_CURRENT="n"
 UKSM="y"
+X86_64="y"
 
 ### HOW-TO:
 #
@@ -29,6 +30,10 @@ UKSM="y"
 #		Set it to "y" to enable the testing uKSM patch, more info here:
 #		http://kerneldedup.org
 #
+## >> Details for: X86_64
+#		Set it to "y" to enable building this kernel for a x86_64 system
+#		WARNING: this is not tested nor supported
+#
 ## >> The previous BFQ_IO_SCHEDULER is useless, read the wiki page in google code
 #
 ##########
@@ -39,38 +44,21 @@ makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.7
 pkgver=${_basekernel}.4
-pkgrel=1
+pkgrel=2
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550/N570 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
-arch=('i686')
+arch=('i686') && [ "$X86_64" = "y" ] && arch+=('x86_64')
 license=('GPL2')
 url=('http://code.google.com/p/kernel-netbook')
 
-####################################
-md5sums=('5323f3faadd051e83af605a63be5ea2e'
-         '1c6f962e3c9fc37cdb59c4757d28ab9a'
-         '62d04d148b99f993ef575a71332593a9'
-         'd64982258f5851cd2ad51a115456b493'
-         '9daa5f662145f91b25b91b9fbeb874d9'
-         'c80954ae588d8c168a0b1ae9ffe84c0e'
-         '0b79e1f3d8457513e85bb62ff838eb1d'
-         '1c2c5ac96842343a189e5e21e184ef7d'
-         'e8c333eaeac43f5c6a1d7b2f47af12e2'
-         '5974286ba3e9716bfbad83d3f4ee985a'
-         'a6f0377c814da594cffcacbc0785ec1a'
-         'e037f08b0ddc52a0b6f9b7fec7da367a'
-         '160a6054ceca92db60898852983a42d4'
-         '1e06c9b7d92d61eab05e970116837144'
-         '9d3c56a4b999c8bfbd4018089a62f662'
-         'a9c018cb0b9caa90f03ee90b71a2c457'
-         '7bfc29c3fb829ebf7ffb82aa20ebcada')
 #############################################
-#  external drivers, firmware and variables #
+#  External drivers, firmware and variables #
 #############################################
 
 #Broadcom-wl:
 broadcom_ver=5.100.82.112
 broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
+[ "$X86_64" = "y" ] && broadcom="hybrid-portsrc_x86_64-v${broadcom_ver//./_}"
 #BFS: - http://users.on.net/~ckolivas/kernel/ -
 _ckpatchversion=1
 _ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
@@ -81,12 +69,14 @@ _toipatch="toi-3.7.patch"
 #uKSM:
 _uksm="http://kerneldedup.org/download/uksm/0.1.2.2"
 _uksm_name="uksm-0.1.2.2-for-v3.7.ge.1"
-##### Sources #####
-source=( #kernel sources and arch patchset
+
+#############################################
+#  Sources                                  #
+#############################################
+
+source=(
 	"http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
 	"http://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
-	##external drivers:
-	"http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz"
 	#BFS patch:
 	"http://ck.kolivas.org/patches/3.0/3.7/${_basekernel}-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
@@ -94,8 +84,6 @@ source=( #kernel sources and arch patchset
 	"${_bfqpath}/0002-block-introduce-the-BFQ-v5r1-I-O-sched-for-3.7.patch"
 	#TuxOnIce:
 	"${_toipatch}"
-	#uKSM
-	"${_uksm}/${_uksm_name}.patch"
 	"logo_linux_mono.pbm"
 	"logo_linux_clut224.ppm"
 	"logo_linux_vga16.ppm"
@@ -106,7 +94,45 @@ source=( #kernel sources and arch patchset
 	"change-default-console-loglevel.patch"
 	"kernel-netbook.preset"
 	"config")
-	
+
+md5sums=('5323f3faadd051e83af605a63be5ea2e'
+         '1c6f962e3c9fc37cdb59c4757d28ab9a'
+         'd64982258f5851cd2ad51a115456b493'
+         '9daa5f662145f91b25b91b9fbeb874d9'
+         'c80954ae588d8c168a0b1ae9ffe84c0e'
+         '0b79e1f3d8457513e85bb62ff838eb1d'
+         'e8c333eaeac43f5c6a1d7b2f47af12e2'
+         '5974286ba3e9716bfbad83d3f4ee985a'
+         'a6f0377c814da594cffcacbc0785ec1a'
+         'e037f08b0ddc52a0b6f9b7fec7da367a'
+         '160a6054ceca92db60898852983a42d4'
+         '1e06c9b7d92d61eab05e970116837144'
+         '9d3c56a4b999c8bfbd4018089a62f662'
+         'a9c018cb0b9caa90f03ee90b71a2c457'
+         '7bfc29c3fb829ebf7ffb82aa20ebcada')
+         
+#############################################
+#  Managin Options                          #
+#############################################
+#
+# broadcom_wl
+#
+if [ $BROADCOM_WL = "y" ] ; then
+  source+=("http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz")
+  if [ "$X86_64" = "y" ] ; then
+	 md5sums+=('310d7ce233a9a352fbe62c451b2ea309')
+  else
+	 md5sums+=('62d04d148b99f993ef575a71332593a9')
+  fi
+fi
+#
+# uksm
+#
+if [ $UKSM = "y" ] ; then
+  source+=("${_uksm}/${_uksm_name}.patch")
+  md5sums+=('1c2c5ac96842343a189e5e21e184ef7d')
+fi
+
 build() {
 
   cd ${srcdir}/linux-$_basekernel
