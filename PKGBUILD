@@ -2,11 +2,11 @@
 # Thanks to graysky for a lot of features in this PKGBUILD
 
 TUX_ON_ICE="y"
-BROADCOM_WL="y"
+BROADCOM_WL="n"
 LOCALMODCONFIG="n"
 USE_CURRENT="n"
 UKSM="y"
-X86_64="y"
+X86_64="n"
 
 ### HOW-TO:
 #
@@ -96,7 +96,7 @@ source=(
 	"config")
 
 md5sums=('5323f3faadd051e83af605a63be5ea2e'
-         '1c6f962e3c9fc37cdb59c4757d28ab9a'
+         'bd6cf727f3b80cba856a1e7f04466d21'
          'd64982258f5851cd2ad51a115456b493'
          '9daa5f662145f91b25b91b9fbeb874d9'
          'c80954ae588d8c168a0b1ae9ffe84c0e'
