@@ -1,4 +1,4 @@
-KERNEL_VERSION=3.7.6-netbook
+KERNEL_VERSION=3.7.10-netbook
 
 repo() {
 echo -e ""
