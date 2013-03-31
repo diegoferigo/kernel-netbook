@@ -5,7 +5,7 @@ TUX_ON_ICE="y"
 BROADCOM_WL="n"
 LOCALMODCONFIG="n"
 USE_CURRENT="n"
-UKSM="n" #Not ready for 3.8
+UKSM="y"
 X86_64="n"
 
 ### HOW-TO:
@@ -70,7 +70,7 @@ _bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.8.0-v6
 _toipatch="toi-3.8.patch"
 #uKSM:
 _uksm="http://kerneldedup.org/download/uksm/0.1.2.2"
-_uksm_name="uksm-0.1.2.2-for-v3.7.ge.1"
+_uksm_name="uksm-0.1.2.2-for-v3.8.ge.3"
 
 #############################################
 #  Sources                                  #
@@ -135,7 +135,7 @@ fi
 #
 if [ $UKSM = "y" ] ; then
   source+=("${_uksm}/${_uksm_name}.patch")
-  md5sums+=('1c2c5ac96842343a189e5e21e184ef7d')
+  md5sums+=('14942242ff034cc1d2cb26228ca5161b')
 fi
 
 build() {
