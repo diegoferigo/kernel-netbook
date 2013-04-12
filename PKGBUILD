@@ -40,7 +40,7 @@ X86_64="n"
  
 pkgname=kernel-netbook
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
-makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware')
+makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lzop')
 optdepends=('hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.8
 pkgver=${_basekernel}.5
