@@ -281,7 +281,6 @@ package_kernel-netbook() {
     patch -p1 -N -i linux-recent.patch
     patch -p1 -N -i license.patch
     patch -p1 -N -i user-ioctl.patch
-    patch -p1 -N -i linux-3.8.patch
     make -C ${srcdir}/linux-$_basekernel M=`pwd`
     install -D -m 755 wl.ko ${pkgdir}/lib/modules/${_extramodules}/wl.ko
     rm -r src/wl
