@@ -271,12 +271,13 @@ package_kernel-netbook() {
   install -D -m644 ${srcdir}/linux-$_basekernel/arch/x86/boot/bzImage ${pkgdir}/boot/vmlinuz-netbook
   install -D -m644 ${srcdir}/linux-$_basekernel/.config $pkgdir/boot/kconfig-netbook
 
-  # install preset file for mkinitcpio
-  #sed -i -e "s/ALL_kver=.*/ALL_kver=\'${_kernver}\'/g" ${srcdir}/${pkgname}.preset
-  install -m644 -D ${srcdir}/${pkgname}.preset ${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset
-
   # set correct depmod command for install
-  sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" $startdir/$pkgname.install
+  cp -f "${startdir}/${install}" "${startdir}/${install}.pkg"
+  true && install=${install}.pkg
+  sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" $startdir/${install}
+
+  # install mkinitcpio preset file for kernel
+  install -D -m644 "${srcdir}/${pkgname}.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset"
 
 ##Extramodules dir support
   _extramodules="extramodules-${_basekernel}${_kernelname:--netbook}"  
