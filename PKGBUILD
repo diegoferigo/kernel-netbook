@@ -70,7 +70,7 @@ _toipatch="toi-3.10.patch"
 _uksm="http://kerneldedup.org/download/uksm/0.1.2.2"
 _uksm_name="uksm-0.1.2.2-for-v3.10"
 #GCC patch to enable more CPU optimizations
-_gcc_patch="kernel-310-gcc48-1.patch"
+_gcc_patch="kernel-310-gcc48-2.patch"
 
 #############################################
 #  Sources                                  #
@@ -97,6 +97,7 @@ source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz
 	"user-ioctl.patch"
 	"change-default-console-loglevel.patch"
 	"acerhdf.patch"
+  "fix-brcmsmac.patch"
 	"kernel-netbook.preset"
 	"config")
 
@@ -168,6 +169,9 @@ prepare() {
   
   ## Patch source to enable more gcc CPU optimizatons via the make nconfig
   patch -Np1 -i "${srcdir}/${_gcc_patch}"
+
+  # Fix brcmsmac regression introduced in f47a5e4f1aaf1d0e2e6875e34b2c9595897bef6 of linux tree
+  patch -Np1 -i "${srcdir}/fix-brcmsmac.patch"
 
   # --> BFS
   msg "Patching source with BFS patch:"
