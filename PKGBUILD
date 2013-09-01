@@ -63,7 +63,7 @@ broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
 _ckpatchversion=1
 _ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
-_bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.10.0-v6r2"
+_bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.10.8+-v6r2"
 #TuxOnIce:
 _toipatch="toi-3.10.patch"
 #uKSM:
@@ -81,9 +81,9 @@ source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz
 	#BFS patch:
 	"http://ck.kolivas.org/patches/3.0/3.10/3.10-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
-	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v6r2-3.10.patch"
-	"${_bfqpath}/0002-block-introduce-the-BFQ-v6r2-I-O-sched-for-3.10.patch"
-	"${_bfqpath}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v6r2-for-3.10.0.patch"
+	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v6r2-3.10.8.patch"
+	"${_bfqpath}/0002-block-introduce-the-BFQ-v6r2-I-O-sched-for-3.10.8.patch"
+	"${_bfqpath}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v6r2-for-.patch"
 	#TuxOnIce:
 	#"http://tuxonice.net/downloads/all/${_toipatch}.bz2"
 	"${_toipatch}"
