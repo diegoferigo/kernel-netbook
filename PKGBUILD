@@ -38,7 +38,7 @@ X86_64="n"
 #
 ##########
  
-pkgname=kernel-netbook
+pkgname="kernel-netbook"
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lzop' 'bc')
 optdepends=('mkinitcpio: optional initramfs creation' 'hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
@@ -97,7 +97,7 @@ source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz
 	"user-ioctl.patch"
 	"change-default-console-loglevel.patch"
 	"acerhdf.patch"
-  "fix-brcmsmac.patch"
+	"fix-brcmsmac.patch"
 	"kernel-netbook.preset"
 	"config")
 
@@ -128,86 +128,90 @@ md5sums=('72d0a9b3e60cd86fabcd3f24b1708944'
 # broadcom_wl
 #
 if [ $BROADCOM_WL = "y" ] ; then
-  source+=("http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz")
-  if [ "$X86_64" = "y" ] ; then
-	 md5sums+=('310d7ce233a9a352fbe62c451b2ea309')
-  else
-	 md5sums+=('62d04d148b99f993ef575a71332593a9')
-  fi
+	source+=("http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz")
+	if [ "$X86_64" = "y" ] ; then
+		md5sums+=('310d7ce233a9a352fbe62c451b2ea309')
+	else
+		md5sums+=('62d04d148b99f993ef575a71332593a9')
+	fi
 fi
 #
 # uksm
 #
 if [ $UKSM = "y" ] ; then
-  source+=("${_uksm}/${_uksm_name}.patch")
-  md5sums+=('4089a51c706f1ca00acfc55829b4dffb')
+	source+=("${_uksm}/${_uksm_name}.patch")
+	md5sums+=('4089a51c706f1ca00acfc55829b4dffb')
 fi
 
 prepare() {
 
-  cd ${srcdir}/linux-$_basekernel
+	cd ${srcdir}/linux-$_basekernel
 
-  # Patching Time:
+	# Patching Time:
 
-  # minorversion patch:
-  if [ ! ${_basekernel} = $pkgver ] ; then
-    msg "Minorversion patch"
-    patch -p1 -i "${srcdir}/patch-${pkgver}"
-  fi
+	# minorversion patch:
+	if [ ! ${_basekernel} = $pkgver ] ; then
+		msg "Minorversion patch"
+		patch -p1 -i "${srcdir}/patch-${pkgver}"
+	fi
 
-  # Update the acerhdf module to fix fan issues:
-  patch -p1 -i "${srcdir}/acerhdf.patch"
+	# Update the acerhdf module to fix fan issues:
+	msg "Patching acerhdf to newer version"
+	patch -p1 -i "${srcdir}/acerhdf.patch"
 
-  # set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
-  # remove this when a Kconfig knob is made available by upstream
-  # (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
-  patch -Np1 -i "${srcdir}/change-default-console-loglevel.patch"
+	# set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
+	# remove this when a Kconfig knob is made available by upstream
+	# (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
+	msg "Changing default console loglevel"
+	patch -Np1 -i "${srcdir}/change-default-console-loglevel.patch"
 
-  # replace tux logo with arch one
-  install -m644 ${srcdir}/logo_linux_clut224.ppm drivers/video/logo/
-  install -m644 ${srcdir}/logo_linux_mono.pbm drivers/video/logo/
-  install -m644 ${srcdir}/logo_linux_vga16.ppm drivers/video/logo/
-  
-  ## Patch source to enable more gcc CPU optimizatons via the make nconfig
-  patch -Np1 -i "${srcdir}/${_gcc_patch}"
+	# replace tux logo with arch one
+	install -m644 ${srcdir}/logo_linux_clut224.ppm drivers/video/logo/
+	install -m644 ${srcdir}/logo_linux_mono.pbm drivers/video/logo/
+	install -m644 ${srcdir}/logo_linux_vga16.ppm drivers/video/logo/
 
-  # Fix brcmsmac regression introduced in f47a5e4f1aaf1d0e2e6875e34b2c9595897bef6 of linux tree
-  patch -Np1 -i "${srcdir}/fix-brcmsmac.patch"
+	## Patch source to enable more gcc CPU optimizations via the make nconfig
+	msg "Enabling more gcc CPU optimizations"
+	patch -Np1 -i "${srcdir}/${_gcc_patch}"
 
-  # --> BFS
-  msg "Patching source with BFS patch:"
-  #Adjust localversion
-  sed -i -e "s/-ck${_ckpatchversion}//g" ${srcdir}/${_ckpatchname}
-  #patching time
-  patch -Np1 -i ${srcdir}/${_ckpatchname}
-  
-  # --> TOI
-  if [ $TUX_ON_ICE = "y" ] ; then
-    msg "Patching source with TuxOnIce patch"
-    patch -Np1 -i ${srcdir}/${_toipatch}
-  fi
+	# Fix brcmsmac regression introduced in f47a5e4f1aaf1d0e2e6875e34b2c9595897bef6 of linux tree
+	msg "Patching brcmsmac to solve some 3.10 regressions"
+	patch -Np1 -i "${srcdir}/fix-brcmsmac.patch"
 
-  # --> BFQ
-  msg "Patching source with BFQ patches"
-  for patch in $(ls ${srcdir}/000*BFQ*.patch) ; do
-    patch -Np1 -i $patch
-  done
+	# --> BFS
+	msg "Patching source with BFS patch"
+	#Adjust localversion
+	sed -i -e "s/-ck${_ckpatchversion}//g" ${srcdir}/${_ckpatchname}
+	#patching time
+	patch -Np1 -i ${srcdir}/${_ckpatchname}
 
-  # --> uKSM
-  if [ $UKSM = "y" ] ; then
-    msg "Patching source with uKSM patch"
-    patch -Np1 -i ${srcdir}/${_uksm_name}.patch
-  fi
-  
-  ### Clean tree and copy config file over
-  msg "Running make mrproper to clean source tree"
-  make mrproper
+	# --> TOI
+	if [ $TUX_ON_ICE = "y" ] ; then
+		msg "Patching source with TuxOnIce patch"
+		patch -Np1 -i ${srcdir}/${_toipatch}
+	fi
 
-  # copy config
-  cp ../config ./.config
-  
-  # Coded by nous
-  if [ $USE_CURRENT = "y" ]; then
+	# --> BFQ
+	msg "Patching source with BFQ patches"
+	for patch in $(ls ${srcdir}/000*BFQ*.patch) ; do
+		patch -Np1 -i $patch
+	done
+
+	# --> uKSM
+	if [ $UKSM = "y" ] ; then
+		msg "Patching source with uKSM patch"
+		patch -Np1 -i ${srcdir}/${_uksm_name}.patch
+	fi
+
+	### Clean tree and copy config file over
+	msg "Running make mrproper to clean source tree"
+	make mrproper
+
+	# copy config
+	cp ../config ./.config
+
+	# Coded by nous
+	if [ $USE_CURRENT = "y" ]; then
 		if [[ -s /proc/config.gz ]]; then
 			msg "Extracting config from /proc/config.gz..."
 			# modprobe configs
@@ -219,18 +223,18 @@ prepare() {
 			exit
 		fi
 	fi
-	
-  # don't run depmod on 'make install'. We'll do this ourselves in packaging
-  sed -i '2iexit 0' scripts/depmod.sh
+
+	# don't run depmod on 'make install'. We'll do this ourselves in packaging
+	sed -i '2iexit 0' scripts/depmod.sh
 }
   
-  build() {
-  
-  cd ${srcdir}/linux-$_basekernel
+build() {
 
-  make prepare
-  
-  	if [ $LOCALMODCONFIG = "y" ] ; then
+	cd ${srcdir}/linux-$_basekernel
+
+	make prepare
+
+	if [ $LOCALMODCONFIG = "y" ] ; then
 		msg "If you have modprobe_db installed, running it in recall mode now"
 		if [ -e /usr/bin/modprobed_db ] ; then
 			[[ ! -x /usr/bin/sudo ]] && echo "Cannot call modprobe with sudo.  Install via pacman -S sudo and configure to work with this user." && exit 1
@@ -240,233 +244,233 @@ prepare() {
 		make localmodconfig
 	fi
 
-  # make defconfig
-  # configure kernel    
-  # use menuconfig, if you want to change the configuration
-  make menuconfig
-  # make gconfig
-  # make nconfig
-  yes "" | make config
-  
-  # Save configuration for later reuse
-  cat .config > ${startdir}/config.last
-  
-  # build kernel
-  msg "Now starts something magic:"
-  make ${MAKEFLAGS} bzImage modules
+	# make defconfig
+	# configure kernel    
+	# use menuconfig, if you want to change the configuration
+	make menuconfig
+	# make gconfig
+	# make nconfig
+	yes "" | make config
+
+	# Save configuration for later reuse
+	cat .config > ${startdir}/config.last
+
+	# build kernel
+	msg "Now starts something magic:"
+	make ${MAKEFLAGS} bzImage modules
 }
 
 package_kernel-netbook() {
-  pkgdesc='Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) - Only Intel GPU - Give more power to your netbook!'
-  depends=('coreutils' 'kmod')
-  install=kernel-netbook.install
-  optdepends=('crda: for wireless regulatory domain support' 
-	      'linux-firmware: firmware for rt2860, tigon3, brcmsmac'
-	      'hibernate-script: tux on ice default script'
-	      'tuxonice-userui: graphical interface for toi [AUR]')
-  groups=(eee)
-  provides=('linux')
+	pkgdesc='Static kernel for netbooks with Intel Atom N270/N280/N450/N550 such as eeepc with the add-on of external firmware (broadcom-wl) - Only Intel GPU - Give more power to your netbook!'
+	depends=('coreutils' 'kmod')
+	install=kernel-netbook.install
+	optdepends=('crda: for wireless regulatory domain support' 
+			'linux-firmware: firmware for rt2860, tigon3, brcmsmac'
+			'hibernate-script: tux on ice default script'
+			'tuxonice-userui: graphical interface for toi [AUR]')
+	groups=(eee)
+	provides=('linux')
 
-  cd ${srcdir}/linux-$_basekernel
-  # install our modules
-  mkdir -p $pkgdir/{lib/modules,boot}
-  make INSTALL_MOD_PATH=$pkgdir modules_install
+	cd ${srcdir}/linux-$_basekernel
+	# install our modules
+	mkdir -p $pkgdir/{lib/modules,boot}
+	make INSTALL_MOD_PATH=$pkgdir modules_install
 
-  # Get kernel version
-  _kernver="$(make kernelrelease)"
+	# Get kernel version
+	_kernver="$(make kernelrelease)"
 
-  # remove build and source links
-  rm -r $pkgdir/lib/modules/$_kernver/{source,build}
-  
-  # remove the firmware directory
-  rm -rf ${pkgdir}/lib/firmware
+	# remove build and source links
+	rm -r $pkgdir/lib/modules/$_kernver/{source,build}
 
-  # install the kernel
-  install -D -m644 ${srcdir}/linux-$_basekernel/System.map $pkgdir/boot/System.map-netbook
-  install -D -m644 ${srcdir}/linux-$_basekernel/arch/x86/boot/bzImage ${pkgdir}/boot/vmlinuz-netbook
-  install -D -m644 ${srcdir}/linux-$_basekernel/.config $pkgdir/boot/kconfig-netbook
+	# remove the firmware directory
+	rm -rf ${pkgdir}/lib/firmware
 
-  # set correct depmod command for install
-  cp -f "${startdir}/${install}" "${startdir}/${install}.pkg"
-  true && install=${install}.pkg
-  sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" $startdir/${install}
+	# install the kernel
+	install -D -m644 ${srcdir}/linux-$_basekernel/System.map $pkgdir/boot/System.map-netbook
+	install -D -m644 ${srcdir}/linux-$_basekernel/arch/x86/boot/bzImage ${pkgdir}/boot/vmlinuz-netbook
+	install -D -m644 ${srcdir}/linux-$_basekernel/.config $pkgdir/boot/kconfig-netbook
 
-  # install mkinitcpio preset file for kernel
-  install -D -m644 "${srcdir}/${pkgname}.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset"
+	# set correct depmod command for install
+	cp -f "${startdir}/${install}" "${startdir}/${install}.pkg"
+	true && install=${install}.pkg
+	sed -i -e "s/KERNEL_VERSION=.*/KERNEL_VERSION=${_kernver}/g" $startdir/${install}
 
-##Extramodules dir support
-  _extramodules="extramodules-${_basekernel}${_kernelname:--netbook}"  
+	# install mkinitcpio preset file for kernel
+	install -D -m644 "${srcdir}/${pkgname}.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgname}.preset"
 
-##Section: Broadcom-wl
-  if [ "${BROADCOM_WL}" == "y" ] ; then
-    msg "Compiling broadcom-wl module:"
-    cd ${srcdir}/
-    cp -ar src/wl src/wl_orig
-    patch -p1 -N -i linux-recent.patch
-    patch -p1 -N -i license.patch
-    patch -p1 -N -i user-ioctl.patch
-    make -C ${srcdir}/linux-$_basekernel M=`pwd`
-    install -D -m 755 wl.ko ${pkgdir}/lib/modules/${_extramodules}/wl.ko
-    rm -r src/wl
-    mv src/wl_orig src/wl
-  fi
+	##Extramodules dir support
+	_extramodules="extramodules-${_basekernel}${_kernelname:--netbook}"  
 
-  # gzip -9 all modules to safe a lot of MB of space
-  find "$pkgdir" -name '*.ko' -exec gzip -9 {} \;
+	##Section: Broadcom-wl
+	if [ "${BROADCOM_WL}" == "y" ] ; then
+		msg "Compiling broadcom-wl module:"
+		cd ${srcdir}/
+		cp -ar src/wl src/wl_orig
+		patch -p1 -N -i linux-recent.patch
+		patch -p1 -N -i license.patch
+		patch -p1 -N -i user-ioctl.patch
+		make -C ${srcdir}/linux-$_basekernel M=`pwd`
+		install -D -m 755 wl.ko ${pkgdir}/lib/modules/${_extramodules}/wl.ko
+		rm -r src/wl
+		mv src/wl_orig src/wl
+	fi
 
-  # make room for external modules
-  ln -s "../${_extramodules}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
-  # add real version for building modules and running depmod from post_install/upgrade
-  mkdir -p "${pkgdir}/lib/modules/${_extramodules}"
-  echo "${_kernver}" > "${pkgdir}/lib/modules/${_extramodules}/version"
+	# gzip -9 all modules to safe a lot of MB of space
+	find "$pkgdir" -name '*.ko' -exec gzip -9 {} \;
 
-  cd ${srcdir}/linux-${_basekernel}
-  # move module tree /lib -> /usr/lib
-  mkdir $pkgdir/usr
-  mv "$pkgdir/lib" "$pkgdir/usr/"
+	# make room for external modules
+	ln -s "../${_extramodules}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
+	# add real version for building modules and running depmod from post_install/upgrade
+	mkdir -p "${pkgdir}/lib/modules/${_extramodules}"
+	echo "${_kernver}" > "${pkgdir}/lib/modules/${_extramodules}/version"
 
-  # Now we call depmod...
-  depmod -b "$pkgdir/usr" -F System.map "$_kernver"
+	cd ${srcdir}/linux-${_basekernel}
+	# move module tree /lib -> /usr/lib
+	mkdir $pkgdir/usr
+	mv "$pkgdir/lib" "$pkgdir/usr/"
+
+	# Now we call depmod...
+	depmod -b "$pkgdir/usr" -F System.map "$_kernver"
 }
 
 package_kernel-netbook-headers() {
-  KARCH=x86
-  pkgdesc='Header files and scripts for building modules for kernel-netbook'
-  provides=('linux-headers')
+	KARCH=x86
+	pkgdesc='Header files and scripts for building modules for kernel-netbook'
+	provides=('linux-headers')
 
-  install -dm755 "${pkgdir}/usr/lib/modules/${_kernver}"
+	install -dm755 "${pkgdir}/usr/lib/modules/${_kernver}"
 
-  cd "${pkgdir}/usr/lib/modules/${_kernver}"
-  ln -sf ../../../src/linux-${_kernver} build
+	cd "${pkgdir}/usr/lib/modules/${_kernver}"
+	ln -sf ../../../src/linux-${_kernver} build
 
-  cd "${srcdir}/linux-${_basekernel}"
-  install -D -m644 Makefile \
-    "${pkgdir}/usr/src/linux-${_kernver}/Makefile"
-  install -D -m644 kernel/Makefile \
-    "${pkgdir}/usr/src/linux-${_kernver}/kernel/Makefile"
-  install -D -m644 .config \
-    "${pkgdir}/usr/src/linux-${_kernver}/.config"
+	cd "${srcdir}/linux-${_basekernel}"
+	install -D -m644 Makefile \
+		"${pkgdir}/usr/src/linux-${_kernver}/Makefile"
+	install -D -m644 kernel/Makefile \
+		"${pkgdir}/usr/src/linux-${_kernver}/kernel/Makefile"
+	install -D -m644 .config \
+		"${pkgdir}/usr/src/linux-${_kernver}/.config"
 
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include"
 
-  for i in acpi asm-generic config crypto drm generated linux math-emu \
-    media net pcmcia scsi sound trace uapi video xen; do
-    cp -a include/${i} "${pkgdir}/usr/src/linux-${_kernver}/include/"
-  done
+	for i in acpi asm-generic config crypto drm generated linux math-emu \
+		media net pcmcia scsi sound trace uapi video xen; do
+		cp -a include/${i} "${pkgdir}/usr/src/linux-${_kernver}/include/"
+	done
 
-  # copy arch includes for external modules
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/arch/x86"
-  cp -a arch/x86/include "${pkgdir}/usr/src/linux-${_kernver}/arch/x86/"
+	# copy arch includes for external modules
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/arch/x86"
+	cp -a arch/x86/include "${pkgdir}/usr/src/linux-${_kernver}/arch/x86/"
 
-  # copy files necessary for later builds, like nvidia and vmware
-  cp Module.symvers "${pkgdir}/usr/src/linux-${_kernver}"
-  cp -a scripts "${pkgdir}/usr/src/linux-${_kernver}"
+	# copy files necessary for later builds, like nvidia and vmware
+	cp Module.symvers "${pkgdir}/usr/src/linux-${_kernver}"
+	cp -a scripts "${pkgdir}/usr/src/linux-${_kernver}"
 
-  # fix permissions on scripts dir
-  chmod og-w -R "${pkgdir}/usr/src/linux-${_kernver}/scripts"
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/.tmp_versions"
+	# fix permissions on scripts dir
+	chmod og-w -R "${pkgdir}/usr/src/linux-${_kernver}/scripts"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/.tmp_versions"
 
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/kernel"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/kernel"
 
-  cp arch/${KARCH}/Makefile "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/"
+	cp arch/${KARCH}/Makefile "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/"
 
-  if [ "${CARCH}" = "i686" ]; then
-    cp arch/${KARCH}/Makefile_32.cpu "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/"
-  fi
+	if [ "${CARCH}" = "i686" ]; then
+		cp arch/${KARCH}/Makefile_32.cpu "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/"
+	fi
 
-  cp arch/${KARCH}/kernel/asm-offsets.s "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/kernel/"
+	cp arch/${KARCH}/kernel/asm-offsets.s "${pkgdir}/usr/src/linux-${_kernver}/arch/${KARCH}/kernel/"
 
-  # add headers for lirc package
-  for i in bt8xx cx88 saa7134; do
-    mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/pci/${i}"
-    cp -a drivers/media/pci/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/pci/${i}"
-  done
-  # usb
-  for i in cpia2 em28xx pwc sn9c102; do
-    mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/${i}"
-    cp -a drivers/media/usb/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/${i}"
-  done
-  # i2c
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c"
-  cp drivers/media/i2c/*.h  "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/"
-  for i in cx25840; do
-    mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/${i}"
-    cp -a drivers/media/i2c/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/${i}"
-  done
+	# add headers for lirc package
+	for i in bt8xx cx88 saa7134; do
+		mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/pci/${i}"
+		cp -a drivers/media/pci/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/pci/${i}"
+	done
+	# usb
+	for i in cpia2 em28xx pwc sn9c102; do
+		mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/${i}"
+		cp -a drivers/media/usb/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/${i}"
+	done
+	# i2c
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c"
+	cp drivers/media/i2c/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/"
+	for i in cx25840; do
+		mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/${i}"
+		cp -a drivers/media/i2c/${i}/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/${i}"
+	done
 
-  # add docbook makefile
-  install -D -m644 Documentation/DocBook/Makefile \
-    "${pkgdir}/usr/src/linux-${_kernver}/Documentation/DocBook/Makefile"
+	# add docbook makefile
+	install -D -m644 Documentation/DocBook/Makefile \
+		"${pkgdir}/usr/src/linux-${_kernver}/Documentation/DocBook/Makefile"
 
-  # add dm headers
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/md"
-  cp drivers/md/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/md"
+	# add dm headers
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/md"
+	cp drivers/md/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/md"
 
-  # add inotify.h
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/linux"
-  cp include/linux/inotify.h "${pkgdir}/usr/src/linux-${_kernver}/include/linux/"
+	# add inotify.h
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/linux"
+	cp include/linux/inotify.h "${pkgdir}/usr/src/linux-${_kernver}/include/linux/"
 
-  # add wireless headers
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/net/mac80211/"
-  cp net/mac80211/*.h "${pkgdir}/usr/src/linux-${_kernver}/net/mac80211/"
+	# add wireless headers
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/net/mac80211/"
+	cp net/mac80211/*.h "${pkgdir}/usr/src/linux-${_kernver}/net/mac80211/"
 
-  # add dvb headers for external modules
-  # in reference to:
-  # http://bugs.archlinux.org/task/9912
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-core"
-  cp drivers/media/dvb-core/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-core/"
-  # and...
-  # http://bugs.archlinux.org/task/11194
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/"
-  
-  [[ -d include/config/dvb ]] && find include/config/dvb -name '*.h' -exec cp {} \
-  "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/" \;
+	# add dvb headers for external modules
+	# in reference to:
+	# http://bugs.archlinux.org/task/9912
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-core"
+	cp drivers/media/dvb-core/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-core/"
+	# and...
+	# http://bugs.archlinux.org/task/11194
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/"
 
-  # add dvb headers for http://mcentral.de/hg/~mrec/em28xx-new
-  # in reference to:
-  # http://bugs.archlinux.org/task/13146
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
-  cp drivers/media/dvb-frontends/lgdt330x.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
-  cp drivers/media/i2c/msp3400-driver.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/"
+	[[ -d include/config/dvb ]] && find include/config/dvb -name '*.h' -exec cp {} \
+		"${pkgdir}/usr/src/linux-${_kernver}/include/config/dvb/" \;
 
-  # add dvb headers
-  # in reference to:
-  # http://bugs.archlinux.org/task/20402
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/dvb-usb"
-  cp drivers/media/usb/dvb-usb/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/dvb-usb/"
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends"
-  cp drivers/media/dvb-frontends/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/tuners"
-  cp drivers/media/tuners/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/tuners/"
+	# add dvb headers for http://mcentral.de/hg/~mrec/em28xx-new
+	# in reference to:
+	# http://bugs.archlinux.org/task/13146
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
+	cp drivers/media/dvb-frontends/lgdt330x.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
+	cp drivers/media/i2c/msp3400-driver.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/i2c/"
 
-  # add xfs and shmem for aufs building
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/fs/xfs"
-  mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/mm"
-  cp fs/xfs/xfs_sb.h "${pkgdir}/usr/src/linux-${_kernver}/fs/xfs/xfs_sb.h"
+	# add dvb headers
+	# in reference to:
+	# http://bugs.archlinux.org/task/20402
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/dvb-usb"
+	cp drivers/media/usb/dvb-usb/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/usb/dvb-usb/"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends"
+	cp drivers/media/dvb-frontends/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/dvb-frontends/"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/tuners"
+	cp drivers/media/tuners/*.h "${pkgdir}/usr/src/linux-${_kernver}/drivers/media/tuners/"
 
-  # copy in Kconfig files
-  for i in `find . -name "Kconfig*"`; do
-    mkdir -p "${pkgdir}"/usr/src/linux-${_kernver}/`echo ${i} | sed 's|/Kconfig.*||'`
-    cp ${i} "${pkgdir}/usr/src/linux-${_kernver}/${i}"
-  done
+	# add xfs and shmem for aufs building
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/fs/xfs"
+	mkdir -p "${pkgdir}/usr/src/linux-${_kernver}/mm"
+	cp fs/xfs/xfs_sb.h "${pkgdir}/usr/src/linux-${_kernver}/fs/xfs/xfs_sb.h"
 
-  chown -R root.root "${pkgdir}/usr/src/linux-${_kernver}"
-  find "${pkgdir}/usr/src/linux-${_kernver}" -type d -exec chmod 755 {} \;
+	# copy in Kconfig files
+	for i in `find . -name "Kconfig*"`; do
+		mkdir -p "${pkgdir}"/usr/src/linux-${_kernver}/`echo ${i} | sed 's|/Kconfig.*||'`
+		cp ${i} "${pkgdir}/usr/src/linux-${_kernver}/${i}"
+	done
 
-  # strip scripts directory
-  find "${pkgdir}/usr/src/linux-${_kernver}/scripts" -type f -perm -u+w 2>/dev/null | while read binary ; do
-    case "$(file -bi "${binary}")" in
-      *application/x-sharedlib*) # Libraries (.so)
-        /usr/bin/strip ${STRIP_SHARED} "${binary}";;
-      *application/x-archive*) # Libraries (.a)
-        /usr/bin/strip ${STRIP_STATIC} "${binary}";;
-      *application/x-executable*) # Binaries
-        /usr/bin/strip ${STRIP_BINARIES} "${binary}";;
-    esac
-  done
+	chown -R root.root "${pkgdir}/usr/src/linux-${_kernver}"
+	find "${pkgdir}/usr/src/linux-${_kernver}" -type d -exec chmod 755 {} \;
 
-  # remove unneeded architectures
-  rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arc,arm,arm26,arm64,avr32,blackfin,cris,frv,h8300,ia64,m32r,m68k,m68knommu,metag,mips,microblaze,mn10300,parisc,powerpc,ppc,s390,sh,sh64,sparc,sparc64,um,v850,xtensa}
+	# strip scripts directory
+	find "${pkgdir}/usr/src/linux-${_kernver}/scripts" -type f -perm -u+w 2>/dev/null | while read binary ; do
+		case "$(file -bi "${binary}")" in
+			*application/x-sharedlib*) # Libraries (.so)
+				/usr/bin/strip ${STRIP_SHARED} "${binary}";;
+			*application/x-archive*) # Libraries (.a)
+				/usr/bin/strip ${STRIP_STATIC} "${binary}";;
+			*application/x-executable*) # Binaries
+				/usr/bin/strip ${STRIP_BINARIES} "${binary}";;
+		esac
+	done
+
+	# remove unneeded architectures
+	rm -rf "${pkgdir}"/usr/src/linux-${_kernver}/arch/{alpha,arc,arm,arm26,arm64,avr32,blackfin,cris,frv,h8300,ia64,m32r,m68k,m68knommu,metag,mips,microblaze,mn10300,parisc,powerpc,ppc,s390,sh,sh64,sparc,sparc64,um,v850,xtensa}
 }
 
 ##
