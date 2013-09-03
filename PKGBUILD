@@ -44,7 +44,7 @@ makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lzop' 'bc')
 optdepends=('mkinitcpio: optional initramfs creation' 'hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.10
 pkgver=${_basekernel}.10
-pkgrel=1
+pkgrel=2
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550/N570 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686') && [ "$X86_64" = "y" ] && arch+=('x86_64')
@@ -98,6 +98,7 @@ source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz
 	"change-default-console-loglevel.patch"
 	"acerhdf.patch"
 	"fix-brcmsmac.patch"
+	"fix-brcmsmac_2.patch"
 	"kernel-netbook.preset"
 	"config")
 
@@ -118,6 +119,7 @@ md5sums=('72d0a9b3e60cd86fabcd3f24b1708944'
          'f3def2cefdcbb954c21d8505d23cc83c'
          '40da1bf34c6042d08e83e1d7c2104d25'
          'ccdf8825a869fbe74d75ccdead7a3ef1'
+         '2aea715d28302f0051501c4f28e5fdbc'
          'a9c018cb0b9caa90f03ee90b71a2c457'
          '31cd90d3c22e7f86799267ce2f3c2306')
          
@@ -175,8 +177,10 @@ prepare() {
 	patch -Np1 -i "${srcdir}/${_gcc_patch}"
 
 	# Fix brcmsmac regression introduced in f47a5e4f1aaf1d0e2e6875e34b2c9595897bef6 of linux tree
+	# Second patch avoid a divide-by-zero problem
 	msg "Patching brcmsmac to solve some 3.10 regressions"
 	patch -Np1 -i "${srcdir}/fix-brcmsmac.patch"
+	patch -Np1 -i "${srcdir}/fix-brcmsmac_2.patch"
 
 	# --> BFS
 	msg "Patching source with BFS patch"
