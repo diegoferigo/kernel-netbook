@@ -40,11 +40,11 @@ X86_64="n"
  
 pkgname="kernel-netbook"
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
-makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lzop' 'bc')
+makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lz4' 'bc')
 optdepends=('mkinitcpio: optional initramfs creation' 'hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
-_basekernel=3.10
-pkgver=${_basekernel}.10
-pkgrel=2
+_basekernel=3.11
+pkgver=${_basekernel}
+pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550/N570 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686') && [ "$X86_64" = "y" ] && arch+=('x86_64')
@@ -63,14 +63,16 @@ broadcom="hybrid-portsrc_x86_32-v${broadcom_ver//./_}"
 _ckpatchversion=1
 _ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
-_bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.10.8+-v6r2"
+_bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.11.0-v6r2"
 #TuxOnIce:
-_toipatch="toi-3.10.patch"
+#New official patch
+_toipath="https://github.com/NigelCunningham/tuxonice-kernel/compare"
+_toipatchname="mirrors:v${_basekernel}...tuxonice-${_basekernel}.diff"
 #uKSM:
 _uksm="http://kerneldedup.org/download/uksm/0.1.2.2"
 _uksm_name="uksm-0.1.2.2-for-v3.10"
 #GCC patch to enable more CPU optimizations
-_gcc_patch="kernel-310-gcc48-2.patch"
+_gcc_patch="kernel-311-gcc48-1.patch"
 
 #############################################
 #  Sources                                  #
@@ -79,14 +81,14 @@ _gcc_patch="kernel-310-gcc48-2.patch"
 source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
 	"http://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
 	#BFS patch:
-	"http://ck.kolivas.org/patches/3.0/3.10/3.10-ck${_ckpatchversion}/${_ckpatchname}.bz2"
+	"http://ck.kolivas.org/patches/3.0/3.11/3.11-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
-	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v6r2-3.10.8.patch"
-	"${_bfqpath}/0002-block-introduce-the-BFQ-v6r2-I-O-sched-for-3.10.8.patch"
-	"${_bfqpath}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v6r2-for-.patch"
+	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v6r2-3.11.patch"
+	"${_bfqpath}/0002-block-introduce-the-BFQ-v6r2-I-O-sched-for-3.11.patch"
+	"${_bfqpath}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v6r2-for-3.11.0.patch"
 	#TuxOnIce:
-	#"http://tuxonice.net/downloads/all/${_toipatch}.bz2"
-	"${_toipatch}"
+	"${_toipath}/${_toipatchname}"
+	#Misc:
 	"http://repo-ck.com/source/gcc_patch/${_gcc_patch}.gz"
 	"logo_linux_mono.pbm"
 	"logo_linux_clut224.ppm"
@@ -97,31 +99,27 @@ source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz
 	"user-ioctl.patch"
 	"change-default-console-loglevel.patch"
 	"acerhdf.patch"
-	"fix-brcmsmac.patch"
-	"fix-brcmsmac_2.patch"
 	"kernel-netbook.preset"
 	"config")
 
-md5sums=('72d0a9b3e60cd86fabcd3f24b1708944'
-         'ddd333aefb490bfff4c86941c9409657'
-         '0c10baeb72b26ffa111dac8ee2eefe26'
-         '0b58997cef7e3d32e976f95718805454'
-         '2b7ab8ed9c8a1f428ce4e98ed0354067'
-         'a6600efa9eac84c6616c582c992d8236'
-         '2a5089e8a47bf3cdfcfd4438dd34b0b5'
-         '2e86111d621bfe0ac0ce251d0e92dfc5'
+md5sums=('17c6c1bc3d96547c05dfa74344480142'
+         '68fd586f2719d334e71719487601facc'
+         'f81fabf9621ae18898863b1c6081cc81'
+         '0f8ad72666ad5e94b50df49f79d36021'
+         'c92242aebf31b636ba897f95aa7a0179'
+         'dcd7dba7d106429f05446e5f906efcbb'
+         'a92568291179c0d22fdf009a00f886c5'
+         '06c96ef2d7ed0a1329fcb59d75d8b440'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
          'a6f0377c814da594cffcacbc0785ec1a'
          '8e90d623768203dde9e97ce8a85dc1f2'
          '160a6054ceca92db60898852983a42d4'
          '1e06c9b7d92d61eab05e970116837144'
-         'f3def2cefdcbb954c21d8505d23cc83c'
+         '98beb36f9b8cf16e58de2483ea9985e3'
          '40da1bf34c6042d08e83e1d7c2104d25'
-         'ccdf8825a869fbe74d75ccdead7a3ef1'
-         '2aea715d28302f0051501c4f28e5fdbc'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         '31cd90d3c22e7f86799267ce2f3c2306')
+         'e7adac96f98e9f26e666843f99bf59f4')
          
 #############################################
 #  Managing Options                         #
@@ -176,12 +174,6 @@ prepare() {
 	msg "Enabling more gcc CPU optimizations"
 	patch -Np1 -i "${srcdir}/${_gcc_patch}"
 
-	# Fix brcmsmac regression introduced in f47a5e4f1aaf1d0e2e6875e34b2c9595897bef6 of linux tree
-	# Second patch avoid a divide-by-zero problem
-	msg "Patching brcmsmac to solve some 3.10 regressions"
-	patch -Np1 -i "${srcdir}/fix-brcmsmac.patch"
-	patch -Np1 -i "${srcdir}/fix-brcmsmac_2.patch"
-
 	# --> BFS
 	msg "Patching source with BFS patch"
 	#Adjust localversion
@@ -192,7 +184,7 @@ prepare() {
 	# --> TOI
 	if [ $TUX_ON_ICE = "y" ] ; then
 		msg "Patching source with TuxOnIce patch"
-		patch -Np1 -i ${srcdir}/${_toipatch}
+		patch -Np1 -i ${srcdir}/${_toipatchname}
 	fi
 
 	# --> BFQ
