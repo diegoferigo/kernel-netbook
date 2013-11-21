@@ -37,14 +37,14 @@ X86_64="n"
 ## >> The previous BFQ_IO_SCHEDULER is useless, read the wiki page in google code
 #
 ##########
- 
+
 pkgname="kernel-netbook"
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lz4' 'bc')
 optdepends=('mkinitcpio: optional initramfs creation' 'hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.12
 pkgver=${_basekernel}
-pkgrel=1
+pkgrel=2
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550/N570 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686') && [ "$X86_64" = "y" ] && arch+=('x86_64')
@@ -72,11 +72,14 @@ _uksm="http://kerneldedup.org/download/uksm/0.1.2.2"
 _uksm_name="uksm-0.1.2.2-for-v3.12"
 #GCC patch to enable more CPU optimizations
 _gcc_patch="kernel-312-gcc48-1.patch"
+#Exfat:
+_exfat_version="1.2.4"
 
 #############################################
 #  Sources                                  #
 #############################################
-
+noextract=("exfat_${_exfat_version}.zip")
+#
 source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
 	"http://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
 	#BFS patch:
@@ -85,6 +88,9 @@ source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz
 	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v6r2-3.12.patch"
 	"${_bfqpath}/0002-block-introduce-the-BFQ-v6r2-I-O-sched-for-3.12.patch"
 	"${_bfqpath}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v6r2-for-3.12.0.patch"
+	#exFAT patch:
+	"exfat_${_exfat_version}.zip"
+	"exFAT-${_basekernel}-combined.patch"
 	#Misc:
 	"http://repo-ck.com/source/gcc_patch/${_gcc_patch}.gz"
 	"logo_linux_mono.pbm"
@@ -104,6 +110,8 @@ md5sums=('b6495f56f5e7166e82c5d04d0024c02a'
          '2d39966d14fdad1e05679232f97fdb3c'
          '2965641038a5aae263722b1ba16b971b'
          '9a55951ee4c3741b61e2e159631b5cf2'
+         'ad9e1009ea4e6f0d252ba65445d42276'
+         '8b7d99f2d357d4b6405e2c085e64a49f'
          '46d23d5c38dea9916edb15c00fee9218'
          'e8c333eaeac43f5c6a1d7b2f47af12e2'
          '5974286ba3e9716bfbad83d3f4ee985a'
@@ -128,7 +136,7 @@ fi
 # broadcom_wl
 #
 if [ $BROADCOM_WL = "y" ] ; then
-	source+=("http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz")
+ 	source+=("http://www.broadcom.com/docs/linux_sta/${broadcom}.tar.gz")
 	if [ "$X86_64" = "y" ] ; then
 		md5sums+=('039f33d2a3ff2890e42717092d1eb0c4')
 	else
@@ -145,6 +153,11 @@ fi
 
 prepare() {
 
+	#Extract the exFAT driver to a folder inside $srcdir
+	cd ${srcdir}
+	mkdir exFAT/ && cd exFAT/
+	unzip ${srcdir}/"exfat_${_exfat_version}.zip"
+ 
 	cd ${srcdir}/linux-$_basekernel
 
 	# Patching Time:
@@ -198,6 +211,12 @@ prepare() {
 		msg "Patching source with uKSM patch"
 		patch -Np1 -i ${srcdir}/${_uksm_name}.patch
 	fi
+
+	# --> exFAT
+	cd ${srcdir}/exFAT/
+	msg "Patching exFAT driver"
+	patch -Np1 -i ${srcdir}/exFAT-${_basekernel}-combined.patch
+	cd ${srcdir}/linux-${_basekernel}
 
 	### Clean tree and copy config file over
 	msg "Running make mrproper to clean source tree"
@@ -309,6 +328,13 @@ package_kernel-netbook() {
 		rm -r src/wl
 		mv src/wl_orig src/wl
 	fi
+
+	##Section: exFAT
+	msg "Compiling exFAT module:"
+	cd ${srcdir}/exFAT/
+	make -C ${srcdir}/linux-${_basekernel}/ M=`pwd` modules
+	install -D -m 755 exfat_core.ko ${pkgdir}/lib/modules/${_extramodules}/exfat_core.ko
+	install -D -m 755 exfat_fs.ko ${pkgdir}/lib/modules/${_extramoduled}/exfat_fs.ko
 
 	# gzip -9 all modules to safe a lot of MB of space
 	find "$pkgdir" -name '*.ko' -exec gzip -9 {} \;
