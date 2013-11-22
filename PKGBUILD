@@ -334,7 +334,7 @@ package_kernel-netbook() {
 	cd ${srcdir}/exFAT/
 	make -C ${srcdir}/linux-${_basekernel}/ M=`pwd` modules
 	install -D -m 755 exfat_core.ko ${pkgdir}/lib/modules/${_extramodules}/exfat_core.ko
-	install -D -m 755 exfat_fs.ko ${pkgdir}/lib/modules/${_extramoduled}/exfat_fs.ko
+	install -D -m 755 exfat_fs.ko ${pkgdir}/lib/modules/${_extramodules}/exfat_fs.ko
 
 	# gzip -9 all modules to safe a lot of MB of space
 	find "$pkgdir" -name '*.ko' -exec gzip -9 {} \;
