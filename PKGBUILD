@@ -43,8 +43,8 @@ true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lz4' 'bc')
 optdepends=('mkinitcpio: optional initramfs creation' 'hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.12
-pkgver=${_basekernel}
-pkgrel=2
+pkgver=${_basekernel}.1
+pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550/N570 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
 arch=('i686') && [ "$X86_64" = "y" ] && arch+=('x86_64')
@@ -66,7 +66,7 @@ _ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 _bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.12.0-v6r2"
 #TuxOnIce:
 _toipath="https://github.com/NigelCunningham/tuxonice-kernel/compare"
-_toipatchname="mirrors:v${pkgver}...tuxonice-${_basekernel}.diff"
+_toipatchname="mirrors:v${_basekernel}...tuxonice-${_basekernel}.diff"
 #uKSM:
 _uksm="http://kerneldedup.org/download/uksm/0.1.2.2"
 _uksm_name="uksm-0.1.2.2-for-v3.12"
@@ -105,7 +105,7 @@ source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz
 	"config")
 
 md5sums=('b6495f56f5e7166e82c5d04d0024c02a'
-         '6e692d7e290cda72aaf45bf7f397421b'
+         '031761d7120d9be43472e71f174f6055'
          '0c8d9758aad0e5f971e0478a89b254a3'
          '2d39966d14fdad1e05679232f97fdb3c'
          '2965641038a5aae263722b1ba16b971b'
