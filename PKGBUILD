@@ -42,8 +42,8 @@ pkgname="kernel-netbook"
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
 makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lz4' 'bc' 'unzip')
 optdepends=('mkinitcpio: optional initramfs creation' 'hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
-_basekernel=3.12
-pkgver=${_basekernel}.1
+_basekernel=3.13
+pkgver=${_basekernel}.5
 pkgrel=1
 pkgdesc="Static kernel for netbooks with Intel Atom N270/N280/N450/N550/N570 such as eeepc with the add-on of external firmware (broadcom-wl) and patchset (BFS + TOI + BFQ optional) - Only Intel GPU - Give more power to your netbook!"
 options=('!strip')
@@ -63,13 +63,14 @@ broadcom="hybrid-v35-nodebug-pcoem-${broadcom_ver//./_}"
 _ckpatchversion=1
 _ckpatchname="patch-${_basekernel}-ck${_ckpatchversion}"
 #BFQ: - http://algo.ing.unimo.it/people/paolo/disk_sched/ -
-_bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.12.0-v6r2"
+_bfqpath="http://www.algogroup.unimo.it/people/paolo/disk_sched/patches/3.13.0-v7r2"
 #TuxOnIce:
-_toipath="https://github.com/NigelCunningham/tuxonice-kernel/compare"
-_toipatchname="mirrors:v${_basekernel}...tuxonice-${_basekernel}.diff"
+#_toipath="https://github.com/NigelCunningham/tuxonice-kernel/compare"
+#_toipatchname="mirrors:v${_basekernel}...tuxonice-${_basekernel}.diff"
+_toipatchname="toi-${_basekernel}.patch"
 #uKSM:
 _uksm="http://kerneldedup.org/download/uksm/0.1.2.2"
-_uksm_name="uksm-0.1.2.2-for-v3.12"
+_uksm_name="uksm-0.1.2.2-for-v3.13"
 #GCC patch to enable more CPU optimizations
 _gcc_patch="kernel-312-gcc48-1.patch"
 #Exfat:
@@ -80,14 +81,14 @@ _exfat_version="1.2.4"
 #############################################
 noextract=("exfat_${_exfat_version}.zip")
 #
-source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz2"
-	"http://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.bz2"
+source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.xz"
+	"http://ftp.kernel.org/pub/linux/kernel/v3.x/patch-${pkgver}.xz"
 	#BFS patch:
-	"http://ck.kolivas.org/patches/3.0/3.12/3.12-ck${_ckpatchversion}/${_ckpatchname}.bz2"
+	"http://ck.kolivas.org/patches/3.0/3.13/3.13-ck${_ckpatchversion}/${_ckpatchname}.bz2"
 	#BFQ patch:
-	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v6r2-3.12.patch"
-	"${_bfqpath}/0002-block-introduce-the-BFQ-v6r2-I-O-sched-for-3.12.patch"
-	"${_bfqpath}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v6r2-for-3.12.0.patch"
+	"${_bfqpath}/0001-block-cgroups-kconfig-build-bits-for-BFQ-v7r2-3.13.patch"
+	"${_bfqpath}/0002-block-introduce-the-BFQ-v7r2-I-O-sched-for-3.13.patch"
+	"${_bfqpath}/0003-block-bfq-add-Early-Queue-Merge-EQM-to-BFQ-v7r2-for-3.13.0.patch"
 	#exFAT patch:
 	"exfat_${_exfat_version}.zip"
 	"exFAT-${_basekernel}-combined.patch"
@@ -104,12 +105,12 @@ source=("http://www.kernel.org/pub/linux/kernel/v3.x/linux-${_basekernel}.tar.bz
 	"kernel-netbook.preset"
 	"config")
 
-md5sums=('b6495f56f5e7166e82c5d04d0024c02a'
-         '031761d7120d9be43472e71f174f6055'
-         '0c8d9758aad0e5f971e0478a89b254a3'
-         '2d39966d14fdad1e05679232f97fdb3c'
-         '2965641038a5aae263722b1ba16b971b'
-         '9a55951ee4c3741b61e2e159631b5cf2'
+md5sums=('0ecbaf65c00374eb4a826c2f9f37606f'
+         '114c391a592131f1c12544e063173a45'
+         '6606bddad4d9a2851b4f5ad2d57441cf'
+         'af879e680d2b723284bed9c660d9bba8'
+         '64b67eb8d84c94fc3929cceaf8d37895'
+         '5c6962340e5617086f4bb9513918bd08'
          'ad9e1009ea4e6f0d252ba65445d42276'
          '8b7d99f2d357d4b6405e2c085e64a49f'
          '46d23d5c38dea9916edb15c00fee9218'
@@ -121,7 +122,8 @@ md5sums=('b6495f56f5e7166e82c5d04d0024c02a'
          '98beb36f9b8cf16e58de2483ea9985e3'
          '40da1bf34c6042d08e83e1d7c2104d25'
          'a9c018cb0b9caa90f03ee90b71a2c457'
-         '5cb9dde0e5ab2fff513b3233504a9703')
+         'e51903d5e8498b31c4d40b6d101d779d')
+
 #############################################
 #  Managing Options                         #
 #############################################
@@ -129,8 +131,10 @@ md5sums=('b6495f56f5e7166e82c5d04d0024c02a'
 # tuxonice
 #
 if [ $TUX_ON_ICE = "y" ] ; then
-	source+=("${_toipath}/${_toipatchname}")
-	md5sums+=('SKIP')
+	#source+=("${_toipath}/${_toipatchname}")
+	#md5sums+=('SKIP')
+	source+=("${_toipatchname}")
+	md5sums+=('ffac0601ed728e1f4f70f166ed558521')
 fi
 #
 # broadcom_wl
@@ -148,7 +152,7 @@ fi
 #
 if [ $UKSM = "y" ] ; then
 	source+=("${_uksm}/${_uksm_name}.patch")
-	md5sums+=('57cbf7fa8220461f8a052ea0eb9af779')
+	md5sums+=('36d74b349f4c0e97dd5e5b91b8a1d750')
 fi
 
 prepare() {
