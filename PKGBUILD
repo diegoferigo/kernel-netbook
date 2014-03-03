@@ -40,7 +40,7 @@ X86_64="n"
 
 pkgname="kernel-netbook"
 true && pkgname=('kernel-netbook' 'kernel-netbook-headers')
-makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lz4' 'bc')
+makedepends=('dmidecode' 'xmlto' 'docbook-xsl' 'linux-firmware' 'lz4' 'bc' 'unzip')
 optdepends=('mkinitcpio: optional initramfs creation' 'hibernate-script: tux on ice default script' 'tuxonice-userui: graphical interface for toi [AUR]')
 _basekernel=3.12
 pkgver=${_basekernel}.1
