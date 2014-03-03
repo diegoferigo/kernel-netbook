@@ -1467,17 +1467,6 @@ index 6a6e4ac..bc989c4 100644
  U14-34F SCSI DRIVER
  M:	Dario Ballabio <ballabio_dario@emc.com>
  L:	linux-scsi@vger.kernel.org
-diff --git a/Makefile b/Makefile
-index a03bbf9..2236ed8 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1,6 +1,6 @@
- VERSION = 3
- PATCHLEVEL = 13
--SUBLEVEL = 5
-+SUBLEVEL = 4
- EXTRAVERSION =
- NAME = One Giant Leap for Frogkind
  
 diff --git a/arch/arm/mach-pxa/am300epd.c b/arch/arm/mach-pxa/am300epd.c
 index e355657..3dfec1e 100644

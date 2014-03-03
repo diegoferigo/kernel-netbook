@@ -134,7 +134,7 @@ if [ $TUX_ON_ICE = "y" ] ; then
 	#source+=("${_toipath}/${_toipatchname}")
 	#md5sums+=('SKIP')
 	source+=("${_toipatchname}")
-	md5sums+=('ffac0601ed728e1f4f70f166ed558521')
+	md5sums+=('cf4d7cb4ff6b445c2cec3be31b8873d1')
 fi
 #
 # broadcom_wl
